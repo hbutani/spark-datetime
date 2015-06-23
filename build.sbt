@@ -38,3 +38,5 @@ libraryDependencies ++= Seq(
   "com.github.nscala-time" %% "nscala-time" % nscalaVersion,
   "org.scalatest" %% "scalatest" % scalatestVersion % "test"
 )
+
+assemblyOption in assembly := (assemblyOption in assembly).value.copy(includeScala = false)
