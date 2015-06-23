@@ -1,14 +1,20 @@
-// Your sbt build file. Guides on how to write one can be found at
-// http://www.scala-sbt.org/0.13/docs/index.html
+name := "spark-datetime"
+
+version := "0.0.1"
+
+organization := "org.sparklinedata"
 
 scalaVersion := "2.10.4"
+
+parallelExecution in Test := false
+
+crossScalaVersions := Seq("2.10.4", "2.11.6")
 
 sparkVersion := "1.4.0"
 
 spName := "SparklineData/spark-dateTime"
 
-// Don't forget to set the version
-version := "0.0.1"
+spAppendScalaVersion := true
 
 // All Spark Packages need a license
 licenses := Seq("Apache-2.0" -> url("http://opensource.org/licenses/Apache-2.0"))
