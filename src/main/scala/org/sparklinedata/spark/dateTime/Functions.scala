@@ -17,6 +17,7 @@
 
 package org.sparklinedata.spark.dateTime
 
+import scala.language.implicitConversions
 import com.github.nscala_time.time.Imports._
 import org.apache.spark.sql.SQLContext
 import org.joda.time.DateTime

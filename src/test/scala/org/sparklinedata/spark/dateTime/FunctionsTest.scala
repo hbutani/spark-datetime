@@ -17,11 +17,11 @@
 
 package org.sparklinedata.spark.dateTime
 
+import scala.language.postfixOps
 import org.apache.spark.sql.test._
 import org.joda.time.format.{DateTimeFormatter, ISODateTimeFormat}
 import org.scalatest.{BeforeAndAfterAll, FunSuite}
 import com.github.nscala_time.time.Imports._
-
 
 import TestSQLContext._
 import Utils._

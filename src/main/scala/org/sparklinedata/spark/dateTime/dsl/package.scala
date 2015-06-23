@@ -17,6 +17,7 @@
 
 package org.sparklinedata.spark.dateTime
 
+import scala.language.implicitConversions
 import org.apache.spark.sql.catalyst.analysis.{UnresolvedAttribute, UnresolvedFunction}
 import org.apache.spark.sql.catalyst.expressions.{Literal, Expression}
 import org.apache.spark.sql.types.StringType
