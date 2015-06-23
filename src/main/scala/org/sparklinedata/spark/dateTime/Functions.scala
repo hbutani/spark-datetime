@@ -23,20 +23,25 @@ import org.joda.time.DateTime
 import org.joda.time.format.ISODateTimeFormat
 
 /**
- * Expose all the functions in [[DateTime]] and the concepts defined [[http://joda-time.sourceforge.net/field.html here]]
+ * Expose all the functions in [[DateTime]] and the concepts defined
+ * [[http://joda-time.sourceforge.net/field.html here]]
  *
  * =function categories=
- *  - '''field access:''' all functions in the [[DateTime]] are available as sql functions. The first argument is the
+ *  - '''field access:''' all functions in the [[DateTime]] are available as sql functions.
+ *  The first argument is the
  *  DateTime object on which the function is to be applied.
  *  - '''construction:''' functions are available to convert a String or a epoch value to DateTime
- *  - '''comparison:''' functions available to compare dates (=, <, <=, >, >=), also compare against __now__.
+ *  - '''comparison:''' functions available to compare dates (=, <, <=, >, >=), also compare
+ *  against __now__.
  *  - '''arithmetic:''' functions available to add/subtract [[Period]] from dates.
  */
 object Functions {
 
-  implicit def dateTimeToSpark(dt: DateTime) = SparkDateTime(dt.getMillis, dt.getChronology.getZone.getID)
+  implicit def dateTimeToSpark(dt: DateTime) = SparkDateTime(dt.getMillis,
+    dt.getChronology.getZone.getID)
 
-  implicit def sparkToDateTime(dt: SparkDateTime) = new DateTime(dt.millis).withZone(DateTimeZone.forID(dt.tzId))
+  implicit def sparkToDateTime(dt: SparkDateTime) =
+    new DateTime(dt.millis).withZone(DateTimeZone.forID(dt.tzId))
 
   implicit def periodToSpark(p: Period) = SparkPeriod(p.toString)
 
@@ -132,36 +137,49 @@ object Functions {
 
   def withEraFn(dT: SparkDateTime, era : Int): SparkDateTime = dT.withEra(era)
 
-  def withCenturyOfEraFn(dT: SparkDateTime, centuryOfEra : Int): SparkDateTime = dT.withCenturyOfEra(centuryOfEra)
+  def withCenturyOfEraFn(dT: SparkDateTime, centuryOfEra : Int): SparkDateTime =
+    dT.withCenturyOfEra(centuryOfEra)
 
-  def withYearOfEraFn(dT: SparkDateTime, yearOfEra : Int): SparkDateTime = dT.withYearOfEra(yearOfEra)
+  def withYearOfEraFn(dT: SparkDateTime, yearOfEra : Int): SparkDateTime =
+    dT.withYearOfEra(yearOfEra)
 
-  def withYearOfCenturyFn(dT: SparkDateTime, yearOfCentury : Int): SparkDateTime = dT.withYearOfCentury(yearOfCentury)
+  def withYearOfCenturyFn(dT: SparkDateTime, yearOfCentury : Int): SparkDateTime =
+    dT.withYearOfCentury(yearOfCentury)
 
   def withYearFn(dT: SparkDateTime, year : Int): SparkDateTime = dT.withYear(year)
 
-  def withWeekyearFn(dT: SparkDateTime, weekyear : Int): SparkDateTime = dT.withWeekyear(weekyear)
+  def withWeekyearFn(dT: SparkDateTime, weekyear : Int): SparkDateTime =
+    dT.withWeekyear(weekyear)
 
-  def withMonthOfYearFn(dT: SparkDateTime, monthOfYear : Int): SparkDateTime = dT.withMonthOfYear(monthOfYear)
+  def withMonthOfYearFn(dT: SparkDateTime, monthOfYear : Int): SparkDateTime =
+    dT.withMonthOfYear(monthOfYear)
 
   def withWeekOfWeekyearFn(dT: SparkDateTime, weekOfWeekyear : Int): SparkDateTime =
     dT.withWeekOfWeekyear(weekOfWeekyear)
 
-  def withDayOfYearFn(dT: SparkDateTime, dayOfYear : Int): SparkDateTime = dT.withDayOfYear(dayOfYear)
+  def withDayOfYearFn(dT: SparkDateTime, dayOfYear : Int): SparkDateTime =
+    dT.withDayOfYear(dayOfYear)
 
-  def withDayOfMonthFn(dT: SparkDateTime, dayOfMonth : Int): SparkDateTime = dT.withDayOfMonth(dayOfMonth)
+  def withDayOfMonthFn(dT: SparkDateTime, dayOfMonth : Int): SparkDateTime =
+    dT.withDayOfMonth(dayOfMonth)
 
-  def withDayOfWeekFn(dT: SparkDateTime, dayOfWeek : Int): SparkDateTime = dT.withDayOfWeek(dayOfWeek)
+  def withDayOfWeekFn(dT: SparkDateTime, dayOfWeek : Int): SparkDateTime =
+    dT.withDayOfWeek(dayOfWeek)
 
-  def withHourOfDayFn(dT: SparkDateTime, hourOfDay : Int): SparkDateTime = dT.withHourOfDay(hourOfDay)
+  def withHourOfDayFn(dT: SparkDateTime, hourOfDay : Int): SparkDateTime =
+    dT.withHourOfDay(hourOfDay)
 
-  def withMinuteOfHourFn(dT: SparkDateTime, minute : Int): SparkDateTime = dT.withMinuteOfHour(minute)
+  def withMinuteOfHourFn(dT: SparkDateTime, minute : Int): SparkDateTime =
+    dT.withMinuteOfHour(minute)
 
-  def withSecondOfMinuteFn(dT: SparkDateTime, second : Int): SparkDateTime = dT.withSecondOfMinute(second)
+  def withSecondOfMinuteFn(dT: SparkDateTime, second : Int): SparkDateTime =
+    dT.withSecondOfMinute(second)
 
-  def withMillisOfDayFn(dT: SparkDateTime, millisOfDay : Int): SparkDateTime = dT.withMillisOfDay(millisOfDay)
+  def withMillisOfDayFn(dT: SparkDateTime, millisOfDay : Int): SparkDateTime =
+    dT.withMillisOfDay(millisOfDay)
 
-  def withMillisOfSecondFn(dT: SparkDateTime, millis : Int): SparkDateTime = dT.withMillisOfSecond(millis)
+  def withMillisOfSecondFn(dT: SparkDateTime, millis : Int): SparkDateTime =
+    dT.withMillisOfSecond(millis)
 
 
   def register(implicit sqlContext: SQLContext) = {

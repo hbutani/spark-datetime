@@ -155,9 +155,12 @@ class FunctionsTest extends FunSuite with BeforeAndAfterAll {
     val millisOfDay = dateTime('dt) millisOfDay
     val millisOfSecond = dateTime('dt) millisOfSecond
 
-    val t = sql(date"select dt, $dT, $millis, $timeZoneId, $era, $centuryOfEra, $yearOfEra, $yearOfCentury, $year, " +
-      date"$weekyear, $monthOfYear, $monthOfYearName, $weekOfWeekyear, $dayOfYear, $dayOfMonth, $dayOfWeek, " +
-      date"$dayOfWeekName, $hourOfDay, $minuteOfDay, $secondOfDay, $secondOfMiunte, $millisOfDay, $millisOfSecond " +
+    val t = sql(date"select dt, $dT, $millis, $timeZoneId, $era, $centuryOfEra, $yearOfEra, " +
+      date"$yearOfCentury, $year, " +
+      date"$weekyear, $monthOfYear, $monthOfYearName, $weekOfWeekyear, $dayOfYear, $dayOfMonth, " +
+      date"$dayOfWeek, " +
+      date"$dayOfWeekName, $hourOfDay, $minuteOfDay, $secondOfDay, $secondOfMiunte, " +
+      date"$millisOfDay, $millisOfSecond " +
       "from input")
     t.collect.foreach { r =>
       val o = r.getString(0)

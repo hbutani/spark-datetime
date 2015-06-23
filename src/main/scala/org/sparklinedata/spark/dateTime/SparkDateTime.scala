@@ -27,7 +27,8 @@ case class SparkDateTime(millis : Long, tzId : String)
 
 class SparkDateTimeUDT extends UserDefinedType[SparkDateTime] {
 
-  override def sqlType: DataType = StructType(Seq(StructField("millis", LongType), StructField("tz", StringType)))
+  override def sqlType: DataType =
+    StructType(Seq(StructField("millis", LongType), StructField("tz", StringType)))
 
 
   override def serialize(obj: Any): Row = {
@@ -44,7 +45,8 @@ class SparkDateTimeUDT extends UserDefinedType[SparkDateTime] {
     datum match {
       case row: Row =>
         require(row.length == 2,
-          s"SparkDateTimeUDT.deserialize given row with length ${row.length} but requires length == 2")
+          s"SparkDateTimeUDT.deserialize given row with length ${row.length} " +
+            s"but requires length == 2")
         SparkDateTime(row.getLong(0), row.getString(1))
     }
   }
