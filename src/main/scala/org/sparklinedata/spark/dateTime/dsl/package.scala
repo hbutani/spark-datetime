@@ -17,9 +17,11 @@
 
 package org.sparklinedata.spark.dateTime
 
+import org.apache.spark.sql.catalyst.expressions.mathfuncs.BinaryMathExpression
+
 import scala.language.implicitConversions
 import org.apache.spark.sql.catalyst.analysis.{UnresolvedAttribute, UnresolvedFunction}
-import org.apache.spark.sql.catalyst.expressions.{Literal, Expression}
+import org.apache.spark.sql.catalyst.expressions.{BinaryExpression, Literal, Expression}
 import org.apache.spark.sql.types.StringType
 import com.github.nscala_time.time.Imports._
 
@@ -27,15 +29,32 @@ package object dsl {
 
   private def fun(nm: String, args: Expression*) = new UnresolvedFunction(nm, args)
 
-  private def toSQL(expr: Any): String = expr match {
-    case l@Literal(_, StringType) if l.value != null => s""""$l""""
-    case f: UnresolvedFunction => {
-      val args = f.children.map(toSQL(_)).mkString("(", ",", ")")
-      s"${f.name}$args"
+  private def toSQL(expr: Any): String = {
+    def sqlFunName(s : String) : String = s match {
+      case "||" => "or"
+      case "&&" => "and"
+      case _ => s
     }
-    case a: UnresolvedAttribute => s"`${a.name}`"
-    case de: DateExpression => toSQL(de.expr)
-    case e: Expression => e.toString()
+
+    expr match {
+      case l@Literal(_, StringType) if l.value != null => s""""$l""""
+      case b : BinaryExpression => {
+        val nm = sqlFunName(b.symbol.toLowerCase)
+        b match {
+          case bm : BinaryMathExpression => {
+            s"$nm(${toSQL(bm.left)}, ${toSQL(bm.right)})"
+          }
+          case _ =>  s"(${toSQL(b.left)}) $nm (${toSQL(b.right)})"
+        }
+      }
+      case f: UnresolvedFunction => {
+        val args = f.children.map(toSQL(_)).mkString("(", ",", ")")
+        s"${f.name}$args"
+      }
+      case a: UnresolvedAttribute => s"`${a.name}`"
+      case de: DateExpression => toSQL(de.expr)
+      case e: Expression => e.toString()
+    }
   }
 
   implicit class DateExpression private[dsl](val expr: Expression) {

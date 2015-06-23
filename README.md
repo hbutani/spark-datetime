@@ -84,6 +84,21 @@ val cE = dateTime('dt) + 3.months > (dateTime('dt) + 12.week)
 val t = sql(date"select dt, $dT, $dT1, $dT2, $dT3, $cE from input")
 ```
 
+#### Weekend filter example
+```scala
+val filter : Expression = ((dateTime('dt) dayOfWeekName) === "Saturday") ||
+      ((dateTime('dt) dayOfWeekName) === "Sunday")
+
+val t = sql(date"select dt from input where $filter")
+```
+
+#### Group By example
+```scala
+val dayOfWeek: Expression = dateTime('dt) dayOfWeekName
+
+val t = sql(date"select $dayOfWeek, count(*) from input group by $dayOfWeek")
+```
+
 ## Building From Source
 This library is built with [SBT](http://www.scala-sbt.org/0.13/docs/Command-Line-Reference.html), which is 
 automatically downloaded by the included shell script. 

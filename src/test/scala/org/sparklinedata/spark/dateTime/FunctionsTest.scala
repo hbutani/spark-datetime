@@ -21,7 +21,10 @@ import scala.language.postfixOps
 import org.apache.spark.sql.test._
 import org.joda.time.format.{DateTimeFormatter, ISODateTimeFormat}
 import org.scalatest.{BeforeAndAfterAll, FunSuite}
+import org.apache.spark.sql.catalyst.expressions.Expression
 import com.github.nscala_time.time.Imports._
+import org.apache.spark.sql.catalyst.dsl.expressions._
+import org.sparklinedata.spark.dateTime.dsl.expressions._
 
 import TestSQLContext._
 import Utils._
@@ -68,9 +71,6 @@ class FunctionsTest extends FunSuite with BeforeAndAfterAll {
   }
 
   test("dsl") {
-    import org.apache.spark.sql.catalyst.dsl.expressions._
-    import org.sparklinedata.spark.dateTime.dsl.expressions._
-
     val dT = dateTime('dt)
     val dOW = dateTime('dt) dayOfWeek
     val dOWNm = dateTime('dt) dayOfWeekName
@@ -101,9 +101,6 @@ class FunctionsTest extends FunSuite with BeforeAndAfterAll {
   }
 
   test("period") {
-    import org.apache.spark.sql.catalyst.dsl.expressions._
-    import org.sparklinedata.spark.dateTime.dsl.expressions._
-
     val dT = dateTime('dt)
     val dT1 = dateTime('dt) + 3.months
     val dT2 = dateTime('dt) - 3.months
@@ -129,9 +126,6 @@ class FunctionsTest extends FunSuite with BeforeAndAfterAll {
   }
 
   test("allDateFunctions") {
-    import org.apache.spark.sql.catalyst.dsl.expressions._
-    import org.sparklinedata.spark.dateTime.dsl.expressions._
-
     val dT = dateTime('dt)
     val millis = dateTime('dt) millis
     val timeZoneId = dateTime('dt) timeZoneId
@@ -212,6 +206,38 @@ class FunctionsTest extends FunSuite with BeforeAndAfterAll {
       assert(oDt.getMillisOfSecond == millisOfSecondVal)
     }
 
+  }
+
+  test("weekendFilter") {
+    val filter : Expression = ((dateTime('dt) dayOfWeekName) === "Saturday") ||
+      ((dateTime('dt) dayOfWeekName) === "Sunday")
+
+    val t = sql(date"select dt from input where $filter")
+    t.collect.foreach { r =>
+      val o = r.getString(0)
+      val oDt = DateTime.parse(o).withZone(DateTimeZone.UTC)
+      assert(oDt.dayOfWeek().getAsText == "Saturday" || oDt.dayOfWeek().getAsText == "Sunday")
+    }
+  }
+
+  test("groupByDayOfWeek") {
+    val dayOfWeek: Expression = dateTime('dt) dayOfWeekName
+
+    val result = Map(
+      "Monday" -> 5,
+      "Tuesday" -> 4,
+      "Wednesday" -> 4,
+      "Friday" -> 4,
+      "Sunday" -> 5,
+      "Thursday" -> 4,
+      "Saturday" -> 4)
+
+    val t = sql(date"select $dayOfWeek, count(*) from input group by $dayOfWeek")
+    t.collect.foreach { r =>
+      val day = r.getString(0)
+      val cnt = r.getLong(1)
+      assert(cnt == result(day))
+    }
   }
 
 }
