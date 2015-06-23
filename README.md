@@ -1,8 +1,8 @@
 # Spark DateTime Library
 
-A library for exposing dateTime functions from the [http://www.joda.org/joda-time/](joda time library) as SQL 
+A library for exposing dateTime functions from the [joda time library](http://www.joda.org/joda-time/) as SQL 
 functions. Also provide a dsl for dateTime catylst expressions; this utilizes the 
-[[https://github.com/nscala-time/nscala-time nscala scala wrapper library]]. 
+[scala wrapper library](https://github.com/nscala-time/nscala-time nscala). 
 
 
 [![Build Status](https://travis-ci.org/SparklineData/spark-datetime.svg?branch=master)](https://travis-ci.org/SparklineData/spark-datetime)
@@ -29,17 +29,17 @@ $ bin/spark-shell --packages org.sparklinedata:spark-datetime_2.10:0.0.1
 
 ## Features
 * A set of functions from the joda library to operate on dates.
-  *  `field access`: all functions in the [http://www.joda.org/joda-time/apidocs/index.html]( DateTime class) are 
+  *  `field access`: all functions in the [DateTime class](http://www.joda.org/joda-time/apidocs/index.html) are 
 available as sql functions. The first argument is the DateTime object on which the function is to be applied.
   *  `construction`: functions are available to convert a String or a epoch value to DateTime
   *  `comparison` functions available to compare dates (=, <, <=, >, >=), also compare against __now__.
-  * `arithmetic`: functions available to add/subtract [http://www.joda.org/joda-time/apidocs/index.html](Period) 
+  * `arithmetic`: functions available to add/subtract [Period](http://www.joda.org/joda-time/apidocs/index.html)
 from dates.
 * A _dsl_ for dateTime catylst expressions.
 * A _StringContext_ to embed date expressions in SQL statements.
 
 ### Function naming convention
-* getter functions on the [http://www.joda.org/joda-time/apidocs/index.html](DateTime class) are exposed with the same
+* getter functions on the [DateTime class](http://www.joda.org/joda-time/apidocs/index.html) are exposed with the same
 name, in camelCase. So _getYear_ is exposed as _year_, _getMonthOfYear_ is exposed as _monthOfYear_ etc.
 
 ### SQL API
