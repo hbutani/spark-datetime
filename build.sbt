@@ -12,7 +12,7 @@ crossScalaVersions := Seq("2.10.4", "2.11.6")
 
 sparkVersion := "1.4.0"
 
-spName := "SparklineData/spark-dateTime"
+spName := "org.sparklinedata/spark-datetime"
 
 spAppendScalaVersion := true
 
