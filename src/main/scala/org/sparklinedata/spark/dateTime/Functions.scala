@@ -192,9 +192,11 @@ object Functions {
 
   def intervalFromStrFn(s: String): SparkInterval = SparkInterval(s)
 
-  def intervalContainsDateTimeFn(si : SparkInterval, dt : SparkDateTime) : Boolean = si.contains(dt)
+  def intervalContainsDateTimeFn(si : SparkInterval, dt : SparkDateTime) : Boolean =
+    si.contains(dt)
 
-  def intervalContainsIntervalFn(si1 : SparkInterval, si2 : SparkInterval) : Boolean = si1.contains(si2)
+  def intervalContainsIntervalFn(si1 : SparkInterval, si2 : SparkInterval) : Boolean =
+    si1.contains(si2)
 
   def intervalOverlapsFn(si1 : SparkInterval, si2 : SparkInterval) : Boolean = si1.overlaps(si2)
 
@@ -330,6 +332,6 @@ object Functions {
 
   }
 
-  def parseDate(s: String): DateTime = ISODateTimeFormat.dateTime().parseDateTime(s)
+  def parseDate(s: String): DateTime = DateTime.parse(s)
 
 }
