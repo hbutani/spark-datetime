@@ -14,7 +14,7 @@ sparkVersion := "1.4.0"
 
 spName := "org.sparklinedata/spark-datetime"
 
-spAppendScalaVersion := true
+//spAppendScalaVersion := true
 
 scalacOptions += "-feature"
 
