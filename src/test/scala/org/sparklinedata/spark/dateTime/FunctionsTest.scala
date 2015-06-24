@@ -33,11 +33,13 @@ case class TRow(dt : String)
 
 class FunctionsTest extends FunSuite with BeforeAndAfterAll {
 
+  val END_DATE = DateTime.parse("2015-06-23T17:27:43.769-07:00")
+
   override def beforeAll() = {
     Functions.register(TestSQLContext)
     val fmt : DateTimeFormatter = ISODateTimeFormat.dateTime()
 
-    val end = DateTime.now
+    val end = END_DATE
     val start = end - 30.days
     val col = intervalToSeq((start to end) , 1.day).map(d => TRow(fmt.print(d)))
 
@@ -225,10 +227,10 @@ class FunctionsTest extends FunSuite with BeforeAndAfterAll {
 
     val result = Map(
       "Monday" -> 5,
-      "Tuesday" -> 4,
+      "Tuesday" -> 5,
       "Wednesday" -> 4,
       "Friday" -> 4,
-      "Sunday" -> 5,
+      "Sunday" -> 4,
       "Thursday" -> 4,
       "Saturday" -> 4)
 
@@ -237,6 +239,27 @@ class FunctionsTest extends FunSuite with BeforeAndAfterAll {
       val day = r.getString(0)
       val cnt = r.getLong(1)
       assert(cnt == result(day))
+    }
+  }
+
+  test("intervals") {
+    val i1 = END_DATE - 15.day to END_DATE - 10.day
+
+    val isBefore = i1 isBeforeE dateTime('dt)
+    val isAfter = i1 isAfterE dateTime('dt)
+    val i2 = dateTime('dt) to (dateTime('dt) + 5.days)
+    val overlapsE = i1 overlapsE i2
+    val abutsE = i1 abutsE i2
+
+    val t = sql(date"select dt, $isBefore, $isAfter, $overlapsE, $abutsE from input")
+    t.collect.foreach { r =>
+      val o = r.getString(0)
+      val oDt = DateTime.parse(o).withZone(DateTimeZone.UTC)
+      assert( (i1 isBefore oDt) == r.getBoolean(1))
+      assert( (i1 isAfter oDt) == r.getBoolean(2))
+      val i3 = oDt to (oDt + 5.days)
+      assert( (i1 overlaps i3) == r.getBoolean(3))
+      assert( (i1 abuts i3) == r.getBoolean(4))
     }
   }
 

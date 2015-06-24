@@ -48,6 +48,10 @@ object Functions {
 
   implicit def sparkToPeriod(sp: SparkPeriod) = Period.parse(sp.periodIsoStr)
 
+  implicit def sparkToInterval(si : SparkInterval) = Interval.parse(si.intervalIsoStr)
+
+  implicit def intervalToSpark(i : Interval) = SparkInterval(i.toString)
+
   def dateTimeFromEpochFn(l : Long) : SparkDateTime = new DateTime(l)
 
   def dateTimeFn(s: String): SparkDateTime = parseDate(s).withZone(DateTimeZone.UTC)
@@ -182,6 +186,29 @@ object Functions {
   def withMillisOfSecondFn(dT: SparkDateTime, millis : Int): SparkDateTime =
     dT.withMillisOfSecond(millis)
 
+  // interval functions
+  def intervalFn(from : SparkDateTime, to : SparkDateTime) : SparkInterval =
+    SparkInterval(new Interval(from.getMillis, to.getMillis).toString)
+
+  def intervalFromStrFn(s: String): SparkInterval = SparkInterval(s)
+
+  def intervalContainsDateTimeFn(si : SparkInterval, dt : SparkDateTime) : Boolean = si.contains(dt)
+
+  def intervalContainsIntervalFn(si1 : SparkInterval, si2 : SparkInterval) : Boolean = si1.contains(si2)
+
+  def intervalOverlapsFn(si1 : SparkInterval, si2 : SparkInterval) : Boolean = si1.overlaps(si2)
+
+  def intervalAbutsFn(si1 : SparkInterval, si2 : SparkInterval) : Boolean = si1.abuts(si2)
+
+  def intervalIsBeforeFn(si : SparkInterval, dt : SparkDateTime) : Boolean = si.isBefore(dt)
+
+  def intervalIsAfterFn(si : SparkInterval, dt : SparkDateTime) : Boolean = si.isAfter(dt)
+
+  def intervalStartFn(si : SparkInterval) : SparkDateTime = si.getStart
+
+  def intervalEndFn(si : SparkInterval) : SparkDateTime = si.getEnd
+
+  def intervalGapFn(si1 : SparkInterval, si2 : SparkInterval) : SparkInterval = si1.gap(si2)
 
   def register(implicit sqlContext: SQLContext) = {
 
@@ -278,6 +305,28 @@ object Functions {
     sqlContext.udf.register("withDayOfYear", withDayOfYearFn _)
 
     sqlContext.udf.register("withDayOfMonth", withDayOfMonthFn _)
+
+    sqlContext.udf.register("interval", intervalFn _)
+
+    sqlContext.udf.register("intervalFromStr", intervalFromStrFn _)
+
+    sqlContext.udf.register("intervalContainsDateTime", intervalContainsDateTimeFn _)
+
+    sqlContext.udf.register("intervalContainsInterval", intervalContainsIntervalFn _)
+
+    sqlContext.udf.register("intervalOverlaps", intervalOverlapsFn _)
+
+    sqlContext.udf.register("intervalAbuts", intervalAbutsFn _)
+
+    sqlContext.udf.register("intervalIsBefore", intervalIsBeforeFn _)
+
+    sqlContext.udf.register("intervalIsAfter", intervalIsAfterFn _)
+
+    sqlContext.udf.register("intervalStart", intervalStartFn _)
+
+    sqlContext.udf.register("intervalEnd", intervalEndFn _)
+
+    sqlContext.udf.register("intervalGap", intervalGapFn _)
 
   }
 

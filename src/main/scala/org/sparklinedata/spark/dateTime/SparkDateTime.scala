@@ -30,7 +30,6 @@ class SparkDateTimeUDT extends UserDefinedType[SparkDateTime] {
   override def sqlType: DataType =
     StructType(Seq(StructField("millis", LongType), StructField("tz", StringType)))
 
-
   override def serialize(obj: Any): Row = {
     obj match {
       case dt: SparkDateTime =>
@@ -81,4 +80,31 @@ class SparkPeriodUDT extends UserDefinedType[SparkPeriod] {
   override def userClass: Class[SparkPeriod] = classOf[SparkPeriod]
 
   override def asNullable: SparkPeriodUDT = this
+}
+
+@SQLUserDefinedType(udt = classOf[SparkIntervalUDT])
+case class SparkInterval(intervalIsoStr : String)
+
+class SparkIntervalUDT extends UserDefinedType[SparkInterval] {
+
+  override def sqlType: DataType = StringType
+
+
+  override def serialize(obj: Any): Any = {
+    obj match {
+      case i: SparkInterval =>
+        CatalystTypeConverters.convertToCatalyst(i.intervalIsoStr)
+    }
+  }
+
+  override def deserialize(datum: Any): SparkInterval = {
+    datum match {
+      case s : UTF8String =>
+        SparkInterval(s.toString())
+    }
+  }
+
+  override def userClass: Class[SparkInterval] = classOf[SparkInterval]
+
+  override def asNullable: SparkIntervalUDT = this
 }

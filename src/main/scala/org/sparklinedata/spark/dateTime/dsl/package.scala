@@ -53,6 +53,7 @@ package object dsl {
       }
       case a: UnresolvedAttribute => s"`${a.name}`"
       case de: DateExpression => toSQL(de.expr)
+      case ie: IntervalExpression => toSQL(ie.expr)
       case e: Expression => e.toString()
     }
   }
@@ -178,16 +179,48 @@ package object dsl {
 
     def <=(dE: DateExpression) = fun("dateIsBeforeOrEqual", expr, dE.expr)
 
+    def to(dE: DateExpression) = new IntervalExpression(fun("interval", expr, dE.expr))
+
   }
 
   implicit class PeriodExpression private[dsl](val p: Period) {
     val expr = fun("period", Literal(p.toString))
   }
 
+  /**
+   * expose function contains, overlaps, abuts and gap. Also expose getting the
+   * start and end of an Interval.
+   * @param expr
+   */
+  implicit class IntervalExpression private[dsl](val expr : Expression) {
+
+    def containsE(dE : DateExpression) = fun("intervalContainsDateTime", expr, dE.expr)
+
+    def containsE(iE : IntervalExpression) = fun("intervalContainsInterval", expr, iE.expr)
+
+    def overlapsE(iE : IntervalExpression) = fun("intervalOverlaps", expr, iE.expr)
+
+    def abutsE(iE : IntervalExpression) = fun("intervalAbuts", expr, iE.expr)
+
+    def isBeforeE(dE : DateExpression) = fun("intervalIsBefore", expr, dE.expr)
+
+    def isAfterE(dE : DateExpression) = fun("intervalIsAfter", expr, dE.expr)
+
+    def startE : DateExpression = new DateExpression(fun("intervalStart", expr))
+
+    def endE : DateExpression = new DateExpression(fun("intervalEnd", expr))
+
+    def gapE(iE : IntervalExpression) : IntervalExpression =
+      new IntervalExpression(fun("intervalGap", expr, iE.expr))
+  }
+
   // scalastyle:off
   object expressions {
 
     implicit def dateExpressionToExpression(dE: DateExpression) = dE.expr
+
+    implicit def intervalToIntervalExpression(i: Interval) =
+      new IntervalExpression(fun("intervalFromStr", Literal(i.toString)))
 
     def dateTime(e: Expression): DateExpression = fun("dateTime", e)
 

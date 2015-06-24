@@ -29,17 +29,19 @@ $ bin/spark-shell --packages org.sparklinedata:spark-datetime_2.10:0.0.1
 
 ## Features
 * A set of functions from the joda library to operate on dates.
-  *  `field access`: all functions in the [DateTime class](http://www.joda.org/joda-time/apidocs/index.html) are 
+  *  `field access`: all functions in the [DateTime class](http://www.joda.org/joda-time/apidocs/org/joda/time/DateTime.html) are 
 available as sql functions. The first argument is the DateTime object on which the function is to be applied.
   *  `construction`: functions are available to convert a String or a epoch value to DateTime
   *  `comparison` functions available to compare dates (=, <, <=, >, >=), also compare against __now__.
-  * `arithmetic`: functions available to add/subtract [Period](http://www.joda.org/joda-time/apidocs/index.html)
+  * `arithmetic`: functions available to add/subtract [Period](http://www.joda.org/joda-time/apidocs/org/joda/time/Period.html)
 from dates.
+  * `intervals`: functions available to construct [Intervals](http://www.joda.org/joda-time/apidocs/org/joda/time/Interval.html)
+  and compare(contains, overlaps, abuts, gap) intervals and dateTimes. 
 * A _dsl_ for dateTime catylst expressions.
 * A _StringContext_ to embed date expressions in SQL statements.
 
 ### Function naming convention
-* getter functions on the [DateTime class](http://www.joda.org/joda-time/apidocs/index.html) are exposed with the same
+* getter functions on the [DateTime class](http://www.joda.org/joda-time/apidocs/org/joda/time/DateTime.html) are exposed with the same
 name, in camelCase. So _getYear_ is exposed as _year_, _getMonthOfYear_ is exposed as _monthOfYear_ etc.
 
 ### SQL API
@@ -97,6 +99,19 @@ val t = sql(date"select dt from input where $filter")
 val dayOfWeek: Expression = dateTime('dt) dayOfWeekName
 
 val t = sql(date"select $dayOfWeek, count(*) from input group by $dayOfWeek")
+```
+
+#### Interval example
+```scala
+val i1 = END_DATE - 15.day to END_DATE - 10.day
+
+val isBefore = i1 isBeforeE dateTime('dt)
+val isAfter = i1 isAfterE dateTime('dt)
+val i2 = dateTime('dt) to (dateTime('dt) + 5.days)
+val overlapsE = i1 overlapsE i2
+val abutsE = i1 abutsE i2
+
+val t = sql(date"select dt, $isBefore, $isAfter, $overlapsE, $abutsE from input")
 ```
 
 ## Building From Source
