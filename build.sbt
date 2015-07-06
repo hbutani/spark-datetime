@@ -12,7 +12,7 @@ crossScalaVersions := Seq("2.10.4", "2.11.6")
 
 sparkVersion := "1.4.0"
 
-spName := "org.sparklinedata/spark-datetime"
+spName := "Sparklinedata/spark-datetime"
 
 //spAppendScalaVersion := true
 
@@ -30,6 +30,8 @@ sparkComponents ++= Seq("sql")
 
 // add any Spark Package dependencies using spDependencies.
 // e.g. spDependencies += "databricks/spark-avro:0.1"
+
+credentials += Credentials(Path.userHome / ".github.cred")
 
 val nscalaVersion = "1.6.0"
 val scalatestVersion = "2.2.4"

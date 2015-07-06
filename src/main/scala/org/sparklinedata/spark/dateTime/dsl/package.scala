@@ -17,6 +17,7 @@
 
 package org.sparklinedata.spark.dateTime
 
+import com.github.nscala_time.time.DurationBuilder
 import org.apache.spark.sql.catalyst.expressions.mathfuncs.BinaryMathExpression
 
 import scala.language.implicitConversions
@@ -221,6 +222,9 @@ package object dsl {
 
     implicit def intervalToIntervalExpression(i: Interval) =
       new IntervalExpression(fun("intervalFromStr", Literal(i.toString)))
+
+    implicit def durationToPeriodExpression(d : DurationBuilder) =
+      new PeriodExpression(d.underlying)
 
     def dateTime(e: Expression): DateExpression = fun("dateTime", e)
 

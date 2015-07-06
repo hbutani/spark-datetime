@@ -31,23 +31,7 @@ import Utils._
 import org.sparklinedata.spark.dateTime.Functions._
 case class TRow(dt : String)
 
-class FunctionsTest extends FunSuite with BeforeAndAfterAll {
-
-  val END_DATE = DateTime.parse("2015-06-23T17:27:43.769-07:00")
-
-  override def beforeAll() = {
-    Functions.register(TestSQLContext)
-    val fmt : DateTimeFormatter = ISODateTimeFormat.dateTime()
-
-    val end = END_DATE
-    val start = end - 30.days
-    val col = intervalToSeq((start to end) , 1.day).map(d => TRow(fmt.print(d)))
-
-    val df = createDataFrame[TRow](sparkContext.parallelize(col))
-    df.registerTempTable("input")
-    df.printSchema()
-
-  }
+class FunctionsTest extends BaseTest {
 
   test("sql") {
     val t = sql("select dt, " +
