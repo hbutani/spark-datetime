@@ -65,6 +65,8 @@ package object dsl {
 
     def timeZoneId: Expression = fun("timeZoneId", expr)
 
+    def withZone(tzId: String) = new DateExpression(fun("withZone", expr, Literal(tzId)))
+
     def dateIsEqualNow: Expression = fun("dateIsEqualNow", expr)
 
     def dateIsBeforeNow: Expression = fun("dateIsBeforeNow", expr)
@@ -74,10 +76,6 @@ package object dsl {
     def dateIsBeforeOrEqualNow: Expression = fun("dateIsBeforeOrEqualNow", expr)
 
     def dateIsAfterOrEqualNow: Expression = fun("dateIsAfterOrEqualNow", expr)
-
-    def datePlus: Expression = fun("datePlus", expr)
-
-    def dateMinus: Expression = fun("dateMinus", expr)
 
     def era: Expression = fun("era", expr)
 
@@ -164,7 +162,6 @@ package object dsl {
 
     def withMillisOfSecond(millis: Int): DateExpression =
       new DateExpression(fun("withMillisOfSecond", Literal(millis)))
-
 
     def + (p: PeriodExpression) = new DateExpression(fun("datePlus", expr, p.expr))
 

@@ -64,6 +64,15 @@ object Functions {
 
   def timeZoneIdFn(dT : SparkDateTime) : String = dT.getZone.getID
 
+  /**
+   *
+   * @param dt
+   * @param tzId from [[https://en.wikipedia.org/wiki/List_of_tz_database_time_zones]]
+   * @return
+   */
+  def withZoneFn(dt : SparkDateTime, tzId : String) : SparkDateTime =
+    dt.withZone(DateTimeZone.forID(tzId))
+
   def dateIsEqualNowFn(dt1: SparkDateTime) : Boolean = dt1.isEqualNow
 
   def dateIsBeforeNowFn(dt1: SparkDateTime) : Boolean = dt1.isBeforeNow
@@ -225,6 +234,8 @@ object Functions {
     sqlContext.udf.register("millis", millisFn _)
 
     sqlContext.udf.register("timeZoneId", timeZoneIdFn _)
+
+    sqlContext.udf.register("withZone", withZoneFn _)
 
     sqlContext.udf.register("dateIsEqualNow", dateIsEqualNowFn _)
 

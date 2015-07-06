@@ -26,7 +26,7 @@ import scala.language.postfixOps
 
 class IssuesTest extends BaseTest {
 
-  test("issue2") {
+  test("issue1") {
 
     val dT = dateTime('dt)
     val dT1 = dateTime('dt) - 8.hour
@@ -42,6 +42,29 @@ class IssuesTest extends BaseTest {
       assert(oDt == d)
       val oDt1 = DateTime.parse(o).withZone(DateTimeZone.UTC) - 8.hour
       assert(oDt1 == d1)
+    }
+  }
+
+  test("issue3") {
+    val dT = dateTime('dt)
+    val dT1 = dateTime('dt) withZone("US/Pacific")
+    val dT2 = dateTime('dt) withZone("Asia/Calcutta")
+
+    val t = sql(date"select dt, $dT, $dT1, $dT2 from input")
+
+    t.collect.foreach { r =>
+      val o = r.getString(0)
+      val d : DateTime = r.getAs[SparkDateTime](1)
+      val d1 : DateTime = r.getAs[SparkDateTime](2)
+      val d2 : DateTime = r.getAs[SparkDateTime](3)
+
+      val oDt = DateTime.parse(o).withZone(DateTimeZone.UTC)
+      assert(oDt == d)
+      val oDt1 = DateTime.parse(o).withZone(DateTimeZone.forID("US/Pacific"))
+      assert(oDt1 == d1)
+
+      val oDt2 = DateTime.parse(o).withZone(DateTimeZone.forID("Asia/Calcutta"))
+      assert(oDt2 == d2)
     }
   }
 }
