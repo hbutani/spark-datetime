@@ -59,7 +59,11 @@ from input
 import com.github.nscala_time.time.Imports._
 import org.apache.spark.sql.catalyst.dsl.expressions._
 import org.sparklinedata.spark.dateTime.dsl.expressions._
+import org.sparklinedata.spark.dateTime.Functions
 
+
+// register all functions 
+Functions.register(sqlContext)
 
 val dT = dateTime('dt)
 val dOW = dateTime('dt) dayOfWeek
