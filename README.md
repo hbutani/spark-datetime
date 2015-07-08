@@ -118,6 +118,28 @@ val abutsE = i1 abutsE i2
 val t = sql(date"select dt, $isBefore, $isAfter, $overlapsE, $abutsE from input")
 ```
 
+#### Time Bucketing
+Use this feature to bucket dates into given Periods. For e.g. 8.hours, 30.mins, 2.days etc.
+
+The following example buckets rows into 3 day periods.  The *bucket* function on a DateExpression
+takes an _origin_ date and a Period specification. The Period is an 
+[iso8061 specification for period.](http://joda-time.sourceforge.net/apidocs/org/joda/time/format/ISOPeriodFormat.html#standard\(\))
+
+```scala
+val start = dateTime("2015-06-23T17:27:43.769-07:00")
+val dT = dateTime('dt)
+val timeBucket = dateTime('dt) bucket(start, 3.days)
+
+val t = sql(date"select dt, $dT, $timeBucket from input")
+```
+
+Or the direct sql for the above query is:
+```sql
+select dt, dateTime(`dt`), 
+      timeBucket(dateTime(`dt`),dateTime("2015-05-24T17:27:43.769-07:00"),period("P3D")) 
+from input
+```
+
 ## Building From Source
 This library is built with [SBT](http://www.scala-sbt.org/0.13/docs/Command-Line-Reference.html), which is 
 automatically downloaded by the included shell script. 

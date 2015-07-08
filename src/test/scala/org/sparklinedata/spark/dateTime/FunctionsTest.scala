@@ -17,6 +17,8 @@
 
 package org.sparklinedata.spark.dateTime
 
+import org.joda.time.field.FieldUtils
+
 import scala.language.postfixOps
 import org.apache.spark.sql.test._
 import org.joda.time.format.{DateTimeFormatter, ISODateTimeFormat}
@@ -244,6 +246,22 @@ class FunctionsTest extends BaseTest {
       val i3 = oDt to (oDt + 5.days)
       assert( (i1 overlaps i3) == r.getBoolean(3))
       assert( (i1 abuts i3) == r.getBoolean(4))
+    }
+  }
+
+  test("timeBuckets") {
+    val start = dateTime(START_DATE.toString)
+    val dT = dateTime('dt)
+    val timeBucket = dateTime('dt) bucket(start, 3.days)
+
+    val t = sql(date"select dt, $dT, $timeBucket from input")
+    t.collect.foreach { r =>
+      val o = r.getString(0)
+      val d: DateTime = r.getAs[SparkDateTime](1)
+      val oDt = DateTime.parse(o).withZone(DateTimeZone.UTC)
+      assert(oDt == d)
+      assert(FieldUtils.safeDivide(new Period(START_DATE, oDt).toStandardDuration.getMillis,
+        3.days.toStandardDuration.getMillis) == r.getLong(2))
     }
   }
 

@@ -179,6 +179,9 @@ package object dsl {
 
     def to(dE: DateExpression) = new IntervalExpression(fun("interval", expr, dE.expr))
 
+    def bucket(origin : DateExpression, p : PeriodExpression) =
+      fun("timeBucket", expr, origin.expr, p.expr)
+
   }
 
   implicit class PeriodExpression private[dsl](val p: Period) {

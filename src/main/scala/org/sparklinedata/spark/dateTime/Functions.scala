@@ -17,6 +17,8 @@
 
 package org.sparklinedata.spark.dateTime
 
+import org.joda.time.field.FieldUtils
+
 import scala.language.implicitConversions
 import com.github.nscala_time.time.Imports._
 import org.apache.spark.sql.SQLContext
@@ -221,6 +223,19 @@ object Functions {
 
   def intervalGapFn(si1 : SparkInterval, si2 : SparkInterval) : SparkInterval = si1.gap(si2)
 
+  /**
+   * Bucket the input dates dt into specified Periods p based on their distance from the origin
+   * @param dt
+   * @param origin
+   * @param p
+   * @return
+   */
+  def timeBucketFn(dt : SparkDateTime, origin : SparkDateTime, p : SparkPeriod) : Long = {
+    val d0 : Duration = p.toStandardDuration
+    val d1 : Duration = new Period(origin, dt).toStandardDuration
+    FieldUtils.safeDivide(d1.getMillis, d0.getMillis)
+  }
+
   def register(implicit sqlContext: SQLContext) = {
 
     sqlContext.udf.register("dateTimeFromEpoch", dateTimeFromEpochFn _)
@@ -340,6 +355,8 @@ object Functions {
     sqlContext.udf.register("intervalEnd", intervalEndFn _)
 
     sqlContext.udf.register("intervalGap", intervalGapFn _)
+
+    sqlContext.udf.register("timeBucket", timeBucketFn _)
 
   }
 

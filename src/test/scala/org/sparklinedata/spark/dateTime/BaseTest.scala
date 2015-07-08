@@ -26,13 +26,14 @@ import org.sparklinedata.spark.dateTime.Utils._
 abstract class BaseTest extends FunSuite with BeforeAndAfterAll {
 
   val END_DATE = DateTime.parse("2015-06-23T17:27:43.769-07:00")
+  val START_DATE = END_DATE - 30.day
 
   override def beforeAll() = {
     Functions.register(TestSQLContext)
     val fmt : DateTimeFormatter = ISODateTimeFormat.dateTime()
 
     val end = END_DATE
-    val start = end - 30.days
+    val start = START_DATE
     val col = intervalToSeq((start to end) , 1.day).map(d => TRow(fmt.print(d)))
 
     val df = createDataFrame[TRow](sparkContext.parallelize(col))
