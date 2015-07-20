@@ -226,9 +226,16 @@ package object dsl {
     implicit def durationToPeriodExpression(d : DurationBuilder) =
       new PeriodExpression(d.underlying)
 
-    def dateTime(e: Expression): DateExpression = fun("dateTime", e)
+    def dateTime(e: Expression, pattern : Option[String] = None): DateExpression = pattern match {
+      case Some(p) => fun ("dateTimeWithFormat", e, Literal (p) )
+      case None => fun("dateTime", e)
+    }
 
-    def dateTimeWithTZ(e: Expression): DateExpression = fun("dateTimeWithTZ", e)
+    def dateTimeWithTZ(e: Expression, pattern : Option[String] = None):
+    DateExpression = pattern match {
+      case Some(p) => fun ("dateTimeWithFormatAndTZFn", e, Literal(p) )
+      case None => fun("dateTimeWithTZ", e)
+    }
 
     def dateTimeFromEpoch(e: Expression): DateExpression = fun("dateTimeFromEpoch", e)
 

@@ -23,7 +23,7 @@ import scala.language.implicitConversions
 import com.github.nscala_time.time.Imports._
 import org.apache.spark.sql.SQLContext
 import org.joda.time.DateTime
-import org.joda.time.format.ISODateTimeFormat
+import org.joda.time.format.{DateTimeFormatter, ISODateTimeFormat}
 
 /**
  * Expose all the functions in [[DateTime]] and the concepts defined
@@ -56,9 +56,15 @@ object Functions {
 
   def dateTimeFromEpochFn(l : Long) : SparkDateTime = new DateTime(l)
 
+  def dateTimeWithFormatFn(s: String, pattern : String): SparkDateTime =
+    parseDate(s, DateTimeFormat.forPattern(pattern)).withZone(DateTimeZone.UTC)
+
   def dateTimeFn(s: String): SparkDateTime = parseDate(s).withZone(DateTimeZone.UTC)
 
   def dateTimeWithTZFn(s: String): SparkDateTime = parseDate(s)
+
+  def dateTimeWithFormatAndTZFn(s: String, pattern : String): SparkDateTime =
+    parseDate(s, DateTimeFormat.forPattern(pattern))
 
   def periodFn(s: String): SparkPeriod = SparkPeriod(s)
 
@@ -242,7 +248,11 @@ object Functions {
 
     sqlContext.udf.register("dateTime", dateTimeFn _)
 
+    sqlContext.udf.register("dateTimeWithFormat", dateTimeWithFormatFn _)
+
     sqlContext.udf.register("dateTimeWithTZ", dateTimeWithTZFn _)
+
+    sqlContext.udf.register("dateTimeWithFormatAndTZFn", dateTimeWithFormatAndTZFn _)
 
     sqlContext.udf.register("period", periodFn _)
 
@@ -361,5 +371,7 @@ object Functions {
   }
 
   def parseDate(s: String): DateTime = DateTime.parse(s)
+
+  def parseDate(s: String, f : DateTimeFormatter): DateTime = DateTime.parse(s, f)
 
 }

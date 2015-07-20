@@ -67,4 +67,19 @@ class IssuesTest extends BaseTest {
       assert(oDt2 == d2)
     }
   }
+
+  test("issue5") {
+    val dP = "yyyy-MM-dd HH:mm:ss"
+    val fmt1 = DateTimeFormat.forPattern(dP)
+    val dT = dateTime('dt, Some(dP))
+
+    val t = sql(date"select dt, $dT from input1")
+    t.collect.foreach { r =>
+      val o = r.getString(0)
+      val d : DateTime = r.getAs[SparkDateTime](1)
+      val oDt = DateTime.parse(o, fmt1).withZone(DateTimeZone.UTC)
+      assert(oDt == d)
+    }
+
+  }
 }

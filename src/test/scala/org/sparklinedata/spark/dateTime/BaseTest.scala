@@ -23,6 +23,8 @@ import org.joda.time.format.{ISODateTimeFormat, DateTimeFormatter}
 import org.scalatest.{BeforeAndAfterAll, FunSuite}
 import org.sparklinedata.spark.dateTime.Utils._
 
+case class TRow(dt: String)
+
 abstract class BaseTest extends FunSuite with BeforeAndAfterAll {
 
   val END_DATE = DateTime.parse("2015-06-23T17:27:43.769-07:00")
@@ -38,7 +40,13 @@ abstract class BaseTest extends FunSuite with BeforeAndAfterAll {
 
     val df = createDataFrame[TRow](sparkContext.parallelize(col))
     df.registerTempTable("input")
-    //df.printSchema()
+
+
+    val fmt1 = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss")
+    val col1 = intervalToSeq((start to end) , 1.day).map(d => TRow(fmt1.print(d)))
+
+    val df1 = createDataFrame[TRow](sparkContext.parallelize(col1))
+    df1.registerTempTable("input1")
 
   }
 }

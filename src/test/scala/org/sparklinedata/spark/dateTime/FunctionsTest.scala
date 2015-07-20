@@ -17,21 +17,16 @@
 
 package org.sparklinedata.spark.dateTime
 
-import org.joda.time.field.FieldUtils
-
-import scala.language.postfixOps
-import org.apache.spark.sql.test._
-import org.joda.time.format.{DateTimeFormatter, ISODateTimeFormat}
-import org.scalatest.{BeforeAndAfterAll, FunSuite}
-import org.apache.spark.sql.catalyst.expressions.Expression
 import com.github.nscala_time.time.Imports._
 import org.apache.spark.sql.catalyst.dsl.expressions._
+import org.apache.spark.sql.catalyst.expressions.Expression
+import org.apache.spark.sql.test.TestSQLContext._
+import org.apache.spark.sql.test._
+import org.joda.time.field.FieldUtils
+import org.sparklinedata.spark.dateTime.Functions._
 import org.sparklinedata.spark.dateTime.dsl.expressions._
 
-import TestSQLContext._
-import Utils._
-import org.sparklinedata.spark.dateTime.Functions._
-case class TRow(dt : String)
+import scala.language.postfixOps
 
 class FunctionsTest extends BaseTest {
 
@@ -44,17 +39,17 @@ class FunctionsTest extends BaseTest {
       "from input")
     t.collect.foreach { r =>
       val o = r.getString(0)
-      val d : DateTime = r.getAs[SparkDateTime](1)
-      val dayOfWeekVal : Int = r.getInt(2)
-      val dayOfWeekNameVal : String = r.getString(3)
-      val dayOfWeekName2Val : String = r.getString(4)
+      val d: DateTime = r.getAs[SparkDateTime](1)
+      val dayOfWeekVal: Int = r.getInt(2)
+      val dayOfWeekNameVal: String = r.getString(3)
+      val dayOfWeekName2Val: String = r.getString(4)
 
       val oDt = DateTime.parse(o).withZone(DateTimeZone.UTC)
       assert(oDt == d)
-      assert (oDt.getDayOfWeek == dayOfWeekVal)
-      assert (oDt.dayOfWeek().getAsText == dayOfWeekNameVal)
+      assert(oDt.getDayOfWeek == dayOfWeekVal)
+      assert(oDt.dayOfWeek().getAsText == dayOfWeekNameVal)
       val oDtTz = DateTime.parse(o)
-      assert (oDtTz.dayOfWeek().getAsText == dayOfWeekName2Val)
+      assert(oDtTz.dayOfWeek().getAsText == dayOfWeekName2Val)
     }
   }
 
@@ -71,18 +66,18 @@ class FunctionsTest extends BaseTest {
     val may22 = DateTime.parse("2015-05-22T08:52:41.903-07:00").withZone(DateTimeZone.UTC)
     t.collect.foreach { r =>
       val o = r.getString(0)
-      val d : DateTime = r.getAs[SparkDateTime](1)
-      val dayOfWeekVal : Int = r.getInt(2)
-      val dayOfWeekNameVal : String = r.getString(3)
-      val dayOfWeekName2Val : String = r.getString(4)
-      val d2  : DateTime = r.getAs[SparkDateTime](6)
+      val d: DateTime = r.getAs[SparkDateTime](1)
+      val dayOfWeekVal: Int = r.getInt(2)
+      val dayOfWeekNameVal: String = r.getString(3)
+      val dayOfWeekName2Val: String = r.getString(4)
+      val d2: DateTime = r.getAs[SparkDateTime](6)
 
       val oDt = DateTime.parse(o).withZone(DateTimeZone.UTC)
       assert(oDt == d)
-      assert (oDt.getDayOfWeek == dayOfWeekVal)
-      assert (oDt.dayOfWeek().getAsText == dayOfWeekNameVal)
+      assert(oDt.getDayOfWeek == dayOfWeekVal)
+      assert(oDt.dayOfWeek().getAsText == dayOfWeekNameVal)
       val oDtTz = DateTime.parse(o)
-      assert (oDtTz.dayOfWeek().getAsText == dayOfWeekName2Val)
+      assert(oDtTz.dayOfWeek().getAsText == dayOfWeekName2Val)
       assert(may22 == d2)
     }
 
@@ -98,17 +93,17 @@ class FunctionsTest extends BaseTest {
     val t = sql(date"select dt, $dT, $dT1, $dT2, $dT3, $cE from input")
     t.collect.foreach { r =>
       val o = r.getString(0)
-      val d : DateTime = r.getAs[SparkDateTime](1)
-      val d1 : DateTime = r.getAs[SparkDateTime](2)
-      val d2 : DateTime = r.getAs[SparkDateTime](3)
-      val d3 : DateTime = r.getAs[SparkDateTime](4)
-      val c : Boolean = r.getBoolean(5)
+      val d: DateTime = r.getAs[SparkDateTime](1)
+      val d1: DateTime = r.getAs[SparkDateTime](2)
+      val d2: DateTime = r.getAs[SparkDateTime](3)
+      val d3: DateTime = r.getAs[SparkDateTime](4)
+      val c: Boolean = r.getBoolean(5)
       val oDt = DateTime.parse(o).withZone(DateTimeZone.UTC)
       assert(oDt == d)
-      assert (oDt + 3.months == d1)
+      assert(oDt + 3.months == d1)
       assert(oDt - 3.month == d2)
       assert(oDt + 12.week == d3)
-      assert((oDt + 3.months > oDt + 12.weeks)== c)
+      assert((oDt + 3.months > oDt + 12.weeks) == c)
     }
 
   }
@@ -146,28 +141,28 @@ class FunctionsTest extends BaseTest {
       "from input")
     t.collect.foreach { r =>
       val o = r.getString(0)
-      val d : DateTime = r.getAs[SparkDateTime](1)
-      val millisVal : Long = r.getLong(2)
-      val timeZoneIdVal : String = r.getString(3)
-      val eraVal : Int = r.getInt(4)
-      val centuryOfEraVal : Int = r.getInt(5)
-      val yearOfEraVal : Int = r.getInt(6)
-      val yearOfCenturyVal : Int = r.getInt(7)
-      val yearVal : Int = r.getInt(8)
-      val weekyearVal : Int = r.getInt(9)
-      val monthOfYearVal : Int = r.getInt(10)
-      val monthOfYearNameVal : String = r.getString(11)
-      val weekOfWeekyearVal : Int = r.getInt(12)
-      val dayOfYearVal : Int = r.getInt(13)
-      val dayOfMonthVal : Int = r.getInt(14)
-      val dayOfWeekVal : Int = r.getInt(15)
-      val dayOfWeekNameVal : String = r.getString(16)
-      val hourOfDayVal : Int = r.getInt(17)
-      val minuteOfDayVal : Int = r.getInt(18)
-      val secondOfDayVal : Int = r.getInt(19)
-      val secondOfMiunteVal : Int = r.getInt(20)
-      val millisOfDayVal : Int = r.getInt(21)
-      val millisOfSecondVal : Int = r.getInt(22)
+      val d: DateTime = r.getAs[SparkDateTime](1)
+      val millisVal: Long = r.getLong(2)
+      val timeZoneIdVal: String = r.getString(3)
+      val eraVal: Int = r.getInt(4)
+      val centuryOfEraVal: Int = r.getInt(5)
+      val yearOfEraVal: Int = r.getInt(6)
+      val yearOfCenturyVal: Int = r.getInt(7)
+      val yearVal: Int = r.getInt(8)
+      val weekyearVal: Int = r.getInt(9)
+      val monthOfYearVal: Int = r.getInt(10)
+      val monthOfYearNameVal: String = r.getString(11)
+      val weekOfWeekyearVal: Int = r.getInt(12)
+      val dayOfYearVal: Int = r.getInt(13)
+      val dayOfMonthVal: Int = r.getInt(14)
+      val dayOfWeekVal: Int = r.getInt(15)
+      val dayOfWeekNameVal: String = r.getString(16)
+      val hourOfDayVal: Int = r.getInt(17)
+      val minuteOfDayVal: Int = r.getInt(18)
+      val secondOfDayVal: Int = r.getInt(19)
+      val secondOfMiunteVal: Int = r.getInt(20)
+      val millisOfDayVal: Int = r.getInt(21)
+      val millisOfSecondVal: Int = r.getInt(22)
 
       val oDt = DateTime.parse(o).withZone(DateTimeZone.UTC)
       assert(oDt == d)
@@ -197,7 +192,7 @@ class FunctionsTest extends BaseTest {
   }
 
   test("weekendFilter") {
-    val filter : Expression = ((dateTime('dt) dayOfWeekName) === "Saturday") ||
+    val filter: Expression = ((dateTime('dt) dayOfWeekName) === "Saturday") ||
       ((dateTime('dt) dayOfWeekName) === "Sunday")
 
     val t = sql(date"select dt from input where $filter")
@@ -241,11 +236,11 @@ class FunctionsTest extends BaseTest {
     t.collect.foreach { r =>
       val o = r.getString(0)
       val oDt = DateTime.parse(o).withZone(DateTimeZone.UTC)
-      assert( (i1 isBefore oDt) == r.getBoolean(1))
-      assert( (i1 isAfter oDt) == r.getBoolean(2))
+      assert((i1 isBefore oDt) == r.getBoolean(1))
+      assert((i1 isAfter oDt) == r.getBoolean(2))
       val i3 = oDt to (oDt + 5.days)
-      assert( (i1 overlaps i3) == r.getBoolean(3))
-      assert( (i1 abuts i3) == r.getBoolean(4))
+      assert((i1 overlaps i3) == r.getBoolean(3))
+      assert((i1 abuts i3) == r.getBoolean(4))
     }
   }
 
