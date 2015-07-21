@@ -16,7 +16,7 @@ You can link against this library in your program at the following coordiates:
 
 ```
 groupId: org.sparklinedata
-artifactId: spark-csv_2.10
+artifactId: spark-datetime_2.10
 version: 0.0.1
 ```
 
@@ -143,5 +143,5 @@ from input
 ## Building From Source
 This library is built with [SBT](http://www.scala-sbt.org/0.13/docs/Command-Line-Reference.html), which is 
 automatically downloaded by the included shell script. 
-To build a JAR file simply run `sbt/sbt package` from the project root. 
+To build a JAR file simply run `build/sbt package` from the project root. 
 The build configuration includes support for both Scala 2.10 and 2.11.
