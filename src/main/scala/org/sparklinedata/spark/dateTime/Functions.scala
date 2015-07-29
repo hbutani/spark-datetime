@@ -17,6 +17,8 @@
 
 package org.sparklinedata.spark.dateTime
 
+import java.io.Serializable
+
 import org.joda.time.field.FieldUtils
 
 import scala.language.implicitConversions
@@ -54,319 +56,477 @@ object Functions {
 
   implicit def intervalToSpark(i : Interval) = SparkInterval(i.toString)
 
-  def dateTimeFromEpochFn(l : Long) : SparkDateTime = new DateTime(l)
-
-  def dateTimeWithFormatFn(s: String, pattern : String): SparkDateTime =
-    parseDate(s, DateTimeFormat.forPattern(pattern)).withZone(DateTimeZone.UTC)
-
-  def dateTimeFn(s: String): SparkDateTime = parseDate(s).withZone(DateTimeZone.UTC)
-
-  def dateTimeWithTZFn(s: String): SparkDateTime = parseDate(s)
-
-  def dateTimeWithFormatAndTZFn(s: String, pattern : String): SparkDateTime =
-    parseDate(s, DateTimeFormat.forPattern(pattern))
-
-  def periodFn(s: String): SparkPeriod = SparkPeriod(s)
-
-  def millisFn(dT : SparkDateTime) : Long = dT.getMillis
-
-  def timeZoneIdFn(dT : SparkDateTime) : String = dT.getZone.getID
-
-  /**
-   *
-   * @param dt
-   * @param tzId from [[https://en.wikipedia.org/wiki/List_of_tz_database_time_zones]]
-   * @return
-   */
-  def withZoneFn(dt : SparkDateTime, tzId : String) : SparkDateTime =
-    dt.withZone(DateTimeZone.forID(tzId))
-
-  def dateIsEqualNowFn(dt1: SparkDateTime) : Boolean = dt1.isEqualNow
-
-  def dateIsBeforeNowFn(dt1: SparkDateTime) : Boolean = dt1.isBeforeNow
-
-  def dateIsAfterNowFn(dt1: SparkDateTime) = dt1.isAfterNow
-
-  def dateIsBeforeOrEqualNowFn(dt1: SparkDateTime) = {
-    val d1: DateTime = dt1
-    d1.isBeforeNow || d1.isEqualNow
+  object dateTimeFromEpochFn extends Function1[Long, SparkDateTime] {
+    def apply(l: Long): SparkDateTime = new DateTime(l)
   }
 
-  def dateIsAfterOrEqualNowFn(dt1: SparkDateTime) = {
-    val d1: DateTime = dt1
-    d1.isAfterNow || d1.isEqualNow
+  object dateTimeWithFormatFn extends Function2[String, String, SparkDateTime] with Serializable {
+    def apply(s: String, pattern: String): SparkDateTime =
+      parseDate(s, DateTimeFormat.forPattern(pattern)).withZone(DateTimeZone.UTC)
   }
 
-  def dateIsEqualFn(dt1: SparkDateTime, dt2: SparkDateTime) = dt1.isEqual(dt2)
-
-  def dateIsBeforeFn(dt1: SparkDateTime, dt2: SparkDateTime) = dt1.isBefore(dt2)
-
-  def dateIsAfterFn(dt1: SparkDateTime, dt2: SparkDateTime) = dt1.isAfter(dt2)
-
-  def dateIsBeforeOrEqualFn(dt1: SparkDateTime, dt2: SparkDateTime) = {
-    val d1: DateTime = dt1
-    val d2: DateTime = dt2
-    d1.isBefore(d2) || d1.isEqual(d2)
+  object dateTimeFn extends Function1[String, SparkDateTime] with Serializable {
+    def apply(s: String): SparkDateTime = parseDate(s).withZone(DateTimeZone.UTC)
   }
 
-  def dateIsAfterOrEqualFn(dt1: SparkDateTime, dt2: SparkDateTime) = {
-    val d1: DateTime = dt1
-    val d2: DateTime = dt2
-    d1.isAfter(d2) || d1.isEqual(d2)
+  object dateTimeWithTZFn extends Function1[String, SparkDateTime] with Serializable {
+    def apply(s: String): SparkDateTime = parseDate(s)
   }
 
-  def datePlusFn(dt: SparkDateTime, p: SparkPeriod): SparkDateTime = dt.plus(p)
+  object dateTimeWithFormatAndTZFn extends Function2[String, String, SparkDateTime]
+  with Serializable {
+    def apply(s: String, pattern: String): SparkDateTime =
+      parseDate(s, DateTimeFormat.forPattern(pattern))
+  }
 
-  def dateMinusFn(dt: SparkDateTime, p: SparkPeriod): SparkDateTime = dt.minus(p)
+  object periodFn extends Function1[String, SparkPeriod] with Serializable {
+    def apply(s: String): SparkPeriod = SparkPeriod(s)
+  }
 
-  def eraFn(dT: SparkDateTime): Int = dT.getEra
+  object millisFn extends Function1[SparkDateTime, Long] with Serializable {
+    def apply(dT: SparkDateTime): Long = dT.getMillis
+  }
 
-  def centuryOfEraFn(dT: SparkDateTime): Int = dT.getCenturyOfEra
+  object timeZoneIdFn extends Function1[SparkDateTime, String] with Serializable {
+    def apply(dT : SparkDateTime) : String = dT.getZone.getID
+  }
 
-  def yearOfEraFn(dT: SparkDateTime): Int = dT.getYearOfEra
+  object withZoneFn extends Function2[SparkDateTime, String, SparkDateTime] with Serializable {
+    /**
+     *
+     * @param dt
+     * @param tzId from [[https://en.wikipedia.org/wiki/List_of_tz_database_time_zones]]
+     * @return
+     */
+    def apply(dt: SparkDateTime, tzId: String): SparkDateTime =
+      dt.withZone(DateTimeZone.forID(tzId))
+  }
 
-  def yearOfCenturyFn(dT: SparkDateTime): Int = dT.getYearOfCentury
+  object dateIsEqualNowFn extends Function1[SparkDateTime, Boolean] with Serializable {
+    def apply(dt1: SparkDateTime) : Boolean = dt1.isEqualNow
+  }
 
-  def yearFn(dT: SparkDateTime): Int = dT.getYear
+  object dateIsBeforeNowFn extends Function1[SparkDateTime, Boolean] with Serializable {
+    def apply(dt1: SparkDateTime) : Boolean = dt1.isBeforeNow
+  }
 
-  def weekyearFn(dT: SparkDateTime): Int = dT.getWeekyear
+  object dateIsAfterNowFn extends Function1[SparkDateTime, Boolean] with Serializable {
+    def apply(dt1: SparkDateTime) = dt1.isAfterNow
+  }
 
-  def monthOfYearFn(dT: SparkDateTime): Int = dT.getMonthOfYear
+  object dateIsBeforeOrEqualNowFn extends Function1[SparkDateTime, Boolean] with Serializable {
+    def apply(dt1: SparkDateTime) = {
+      val d1: DateTime = dt1
+      d1.isBeforeNow || d1.isEqualNow
+    }
+  }
 
-  def monthOfYearNameFn(dT: SparkDateTime): String = dT.monthOfYear().getAsText
+  object dateIsAfterOrEqualNowFn extends Function1[SparkDateTime, Boolean] with Serializable {
+    def apply(dt1: SparkDateTime) = {
+      val d1: DateTime = dt1
+      d1.isAfterNow || d1.isEqualNow
+    }
+  }
 
-  def weekOfWeekyearFn(dT: SparkDateTime): Int = dT.getWeekOfWeekyear
+  object dateIsEqualFn extends Function2[SparkDateTime, SparkDateTime, Boolean] with Serializable {
+    def apply(dt1: SparkDateTime, dt2: SparkDateTime) = dt1.isEqual(dt2)
+  }
 
-  def dayOfYearFn(dT: SparkDateTime): Int = dT.getDayOfYear
+  object dateIsBeforeFn extends Function2[SparkDateTime, SparkDateTime, Boolean]
+  with Serializable {
+    def apply(dt1: SparkDateTime, dt2: SparkDateTime) = dt1.isBefore(dt2)
+  }
 
-  def dayOfMonthFn(dT: SparkDateTime): Int = dT.getDayOfMonth
+  object dateIsAfterFn extends Function2[SparkDateTime, SparkDateTime, Boolean]
+  with Serializable {
+    def apply(dt1: SparkDateTime, dt2: SparkDateTime) = dt1.isAfter(dt2)
+  }
 
-  def dayOfWeekFn(dT: SparkDateTime): Int = dT.getDayOfWeek
+  object dateIsBeforeOrEqualFn extends Function2[SparkDateTime, SparkDateTime, Boolean]
+  with Serializable {
+    def apply(dt1: SparkDateTime, dt2: SparkDateTime) = {
+      val d1: DateTime = dt1
+      val d2: DateTime = dt2
+      d1.isBefore(d2) || d1.isEqual(d2)
+    }
+  }
 
-  def dayOfWeekNameFn(dT: SparkDateTime): String = dT.dayOfWeek().getAsText
+  object dateIsAfterOrEqualFn extends Function2[SparkDateTime, SparkDateTime, Boolean]
+  with Serializable {
+    def apply(dt1: SparkDateTime, dt2: SparkDateTime) = {
+      val d1: DateTime = dt1
+      val d2: DateTime = dt2
+      d1.isAfter(d2) || d1.isEqual(d2)
+    }
+  }
 
-  def hourOfDayFn(dT: SparkDateTime): Int = dT.getHourOfDay
+  object datePlusFn extends Function2[SparkDateTime, SparkPeriod, SparkDateTime]
+  with Serializable {
+    def apply(dt: SparkDateTime, p: SparkPeriod): SparkDateTime = dt.plus(p)
+  }
 
-  def minuteOfDayFn(dT: SparkDateTime): Int = dT.getMinuteOfDay
+  object dateMinusFn extends Function2[SparkDateTime, SparkPeriod, SparkDateTime]
+  with Serializable {
+    def apply(dt: SparkDateTime, p: SparkPeriod): SparkDateTime = dt.minus(p)
+  }
 
-  def secondOfDayFn(dT: SparkDateTime): Int = dT.getSecondOfDay
+  object eraFn extends Function1[SparkDateTime, Int] with Serializable {
+    def apply (dT: SparkDateTime): Int = dT.getEra
+  }
 
-  def secondOfMinuteFn(dT: SparkDateTime): Int = dT.getSecondOfMinute
+  object centuryOfEraFn extends Function1[SparkDateTime, Int] with Serializable {
+    def apply(dT: SparkDateTime): Int = dT.getCenturyOfEra
+  }
 
-  def millisOfDayFn(dT: SparkDateTime): Int = dT.getMillisOfDay
+  object yearOfEraFn extends Function1[SparkDateTime, Int] with Serializable {
+    def apply(dT: SparkDateTime): Int = dT.getYearOfEra
+  }
 
-  def millisOfSecondFn(dT: SparkDateTime): Int = dT.getMillisOfSecond
+  object yearOfCenturyFn extends Function1[SparkDateTime, Int] with Serializable {
+    def apply(dT: SparkDateTime): Int = dT.getYearOfCentury
+  }
 
-  def withEraFn(dT: SparkDateTime, era : Int): SparkDateTime = dT.withEra(era)
+  object yearFn extends Function1[SparkDateTime, Int] with Serializable {
+    def apply(dT: SparkDateTime): Int = dT.getYear
+  }
 
-  def withCenturyOfEraFn(dT: SparkDateTime, centuryOfEra : Int): SparkDateTime =
-    dT.withCenturyOfEra(centuryOfEra)
+  object weekyearFn extends Function1[SparkDateTime, Int] with Serializable {
+    def apply(dT: SparkDateTime): Int = dT.getWeekyear
+  }
 
-  def withYearOfEraFn(dT: SparkDateTime, yearOfEra : Int): SparkDateTime =
-    dT.withYearOfEra(yearOfEra)
+  object monthOfYearFn extends Function1[SparkDateTime, Int] with Serializable {
+    def apply(dT: SparkDateTime): Int = dT.getMonthOfYear
+  }
 
-  def withYearOfCenturyFn(dT: SparkDateTime, yearOfCentury : Int): SparkDateTime =
-    dT.withYearOfCentury(yearOfCentury)
+  object monthOfYearNameFn extends Function1[SparkDateTime, String] with Serializable {
+    def apply(dT: SparkDateTime): String = dT.monthOfYear().getAsText
+  }
 
-  def withYearFn(dT: SparkDateTime, year : Int): SparkDateTime = dT.withYear(year)
+  object weekOfWeekyearFn extends Function1[SparkDateTime, Int] with Serializable {
+    def apply(dT: SparkDateTime): Int = dT.getWeekOfWeekyear
+  }
 
-  def withWeekyearFn(dT: SparkDateTime, weekyear : Int): SparkDateTime =
-    dT.withWeekyear(weekyear)
+  object dayOfYearFn extends Function1[SparkDateTime, Int] with Serializable {
+    def apply(dT: SparkDateTime): Int = dT.getDayOfYear
+  }
 
-  def withMonthOfYearFn(dT: SparkDateTime, monthOfYear : Int): SparkDateTime =
-    dT.withMonthOfYear(monthOfYear)
+  object dayOfMonthFn extends Function1[SparkDateTime, Int] with Serializable {
+    def apply(dT: SparkDateTime): Int = dT.getDayOfMonth
+  }
 
-  def withWeekOfWeekyearFn(dT: SparkDateTime, weekOfWeekyear : Int): SparkDateTime =
-    dT.withWeekOfWeekyear(weekOfWeekyear)
+  object dayOfWeekFn extends Function1[SparkDateTime, Int] with Serializable {
+    def apply(dT: SparkDateTime): Int = dT.getDayOfWeek
+  }
 
-  def withDayOfYearFn(dT: SparkDateTime, dayOfYear : Int): SparkDateTime =
-    dT.withDayOfYear(dayOfYear)
+  object dayOfWeekNameFn extends Function1[SparkDateTime, String] with Serializable {
+    def apply(dT: SparkDateTime): String = dT.dayOfWeek().getAsText
+  }
 
-  def withDayOfMonthFn(dT: SparkDateTime, dayOfMonth : Int): SparkDateTime =
-    dT.withDayOfMonth(dayOfMonth)
+  object hourOfDayFn extends Function1[SparkDateTime, Int] with Serializable {
+    def apply(dT: SparkDateTime): Int = dT.getHourOfDay
+  }
 
-  def withDayOfWeekFn(dT: SparkDateTime, dayOfWeek : Int): SparkDateTime =
-    dT.withDayOfWeek(dayOfWeek)
+  object minuteOfDayFn extends Function1[SparkDateTime, Int] with Serializable {
+    def apply(dT: SparkDateTime): Int = dT.getMinuteOfDay
+  }
 
-  def withHourOfDayFn(dT: SparkDateTime, hourOfDay : Int): SparkDateTime =
-    dT.withHourOfDay(hourOfDay)
+  object secondOfDayFn extends Function1[SparkDateTime, Int] with Serializable {
+    def apply(dT: SparkDateTime): Int = dT.getSecondOfDay
+  }
 
-  def withMinuteOfHourFn(dT: SparkDateTime, minute : Int): SparkDateTime =
-    dT.withMinuteOfHour(minute)
+  object secondOfMinuteFn extends Function1[SparkDateTime, Int] with Serializable {
+    def apply(dT: SparkDateTime): Int = dT.getSecondOfMinute
+  }
 
-  def withSecondOfMinuteFn(dT: SparkDateTime, second : Int): SparkDateTime =
-    dT.withSecondOfMinute(second)
+  object millisOfDayFn extends Function1[SparkDateTime, Int] with Serializable {
+    def apply(dT: SparkDateTime): Int = dT.getMillisOfDay
+  }
 
-  def withMillisOfDayFn(dT: SparkDateTime, millisOfDay : Int): SparkDateTime =
-    dT.withMillisOfDay(millisOfDay)
+  object millisOfSecondFn extends Function1[SparkDateTime, Int] with Serializable {
+    def apply(dT: SparkDateTime): Int = dT.getMillisOfSecond
+  }
 
-  def withMillisOfSecondFn(dT: SparkDateTime, millis : Int): SparkDateTime =
-    dT.withMillisOfSecond(millis)
+  object withEraFn extends Function2[SparkDateTime, Int, SparkDateTime] with Serializable {
+    def apply(dT: SparkDateTime, era: Int): SparkDateTime = dT.withEra(era)
+  }
+
+  object withCenturyOfEraFn extends Function2[SparkDateTime, Int, SparkDateTime]
+  with Serializable {
+    def apply(dT: SparkDateTime, centuryOfEra: Int): SparkDateTime =
+      dT.withCenturyOfEra(centuryOfEra)
+  }
+
+  object withYearOfEraFn extends Function2[SparkDateTime, Int, SparkDateTime] with Serializable {
+    def apply(dT: SparkDateTime, yearOfEra: Int): SparkDateTime =
+      dT.withYearOfEra(yearOfEra)
+  }
+
+  object withYearOfCenturyFn extends Function2[SparkDateTime, Int, SparkDateTime]
+  with Serializable {
+    def apply(dT: SparkDateTime, yearOfCentury: Int): SparkDateTime =
+      dT.withYearOfCentury(yearOfCentury)
+  }
+
+  object withYearFn extends Function2[SparkDateTime, Int, SparkDateTime] with Serializable {
+    def apply(dT: SparkDateTime, year: Int): SparkDateTime = dT.withYear(year)
+  }
+
+  object withWeekyearFn extends Function2[SparkDateTime, Int, SparkDateTime] with Serializable {
+    def apply(dT: SparkDateTime, weekyear: Int): SparkDateTime =
+      dT.withWeekyear(weekyear)
+  }
+
+  object withMonthOfYearFn extends Function2[SparkDateTime, Int, SparkDateTime] with Serializable {
+    def apply(dT: SparkDateTime, monthOfYear: Int): SparkDateTime =
+      dT.withMonthOfYear(monthOfYear)
+  }
+
+  object withWeekOfWeekyearFn extends Function2[SparkDateTime, Int, SparkDateTime]
+  with Serializable {
+    def apply(dT: SparkDateTime, weekOfWeekyear: Int): SparkDateTime =
+      dT.withWeekOfWeekyear(weekOfWeekyear)
+  }
+
+  object withDayOfYearFn extends Function2[SparkDateTime, Int, SparkDateTime] with Serializable {
+    def apply(dT: SparkDateTime, dayOfYear: Int): SparkDateTime =
+      dT.withDayOfYear(dayOfYear)
+  }
+
+  object withDayOfMonthFn extends Function2[SparkDateTime, Int, SparkDateTime] with Serializable {
+    def apply(dT: SparkDateTime, dayOfMonth: Int): SparkDateTime =
+      dT.withDayOfMonth(dayOfMonth)
+  }
+
+  object withDayOfWeekFn extends Function2[SparkDateTime, Int, SparkDateTime] with Serializable {
+    def apply(dT: SparkDateTime, dayOfWeek: Int): SparkDateTime =
+      dT.withDayOfWeek(dayOfWeek)
+  }
+
+  object withHourOfDayFn extends Function2[SparkDateTime, Int, SparkDateTime] with Serializable {
+    def apply(dT: SparkDateTime, hourOfDay: Int): SparkDateTime =
+      dT.withHourOfDay(hourOfDay)
+  }
+
+  object withMinuteOfHourFn extends Function2[SparkDateTime, Int, SparkDateTime]
+  with Serializable {
+    def apply(dT: SparkDateTime, minute: Int): SparkDateTime =
+      dT.withMinuteOfHour(minute)
+  }
+
+  object withSecondOfMinuteFn extends Function2[SparkDateTime, Int, SparkDateTime]
+  with Serializable {
+    def apply(dT: SparkDateTime, second: Int): SparkDateTime =
+      dT.withSecondOfMinute(second)
+  }
+
+  object withMillisOfDayFn extends Function2[SparkDateTime, Int, SparkDateTime] with Serializable {
+    def apply(dT: SparkDateTime, millisOfDay: Int): SparkDateTime =
+      dT.withMillisOfDay(millisOfDay)
+  }
+
+  object withMillisOfSecondFn extends Function2[SparkDateTime, Int, SparkDateTime]
+  with Serializable {
+    def apply(dT: SparkDateTime, millis: Int): SparkDateTime =
+      dT.withMillisOfSecond(millis)
+  }
 
   // interval functions
-  def intervalFn(from : SparkDateTime, to : SparkDateTime) : SparkInterval =
-    SparkInterval(new Interval(from.getMillis, to.getMillis).toString)
+  object intervalFn extends Function2[SparkDateTime, SparkDateTime, SparkInterval]
+  with Serializable {
+    def apply(from: SparkDateTime, to: SparkDateTime): SparkInterval =
+      SparkInterval(new Interval(from.getMillis, to.getMillis).toString)
+  }
 
-  def intervalFromStrFn(s: String): SparkInterval = SparkInterval(s)
+  object intervalFromStrFn extends Function1[String, SparkInterval] with Serializable {
+    def apply(s: String): SparkInterval = SparkInterval(s)
+  }
 
-  def intervalContainsDateTimeFn(si : SparkInterval, dt : SparkDateTime) : Boolean =
-    si.contains(dt)
+  object intervalContainsDateTimeFn extends Function2[SparkInterval, SparkDateTime, Boolean]
+  with Serializable {
+    def apply(si: SparkInterval, dt: SparkDateTime): Boolean =
+      si.contains(dt)
+  }
 
-  def intervalContainsIntervalFn(si1 : SparkInterval, si2 : SparkInterval) : Boolean =
-    si1.contains(si2)
+  object intervalContainsIntervalFn extends Function2[SparkInterval, SparkInterval, Boolean]
+  with Serializable {
+    def apply(si1: SparkInterval, si2: SparkInterval): Boolean =
+      si1.contains(si2)
+  }
 
-  def intervalOverlapsFn(si1 : SparkInterval, si2 : SparkInterval) : Boolean = si1.overlaps(si2)
+  object intervalOverlapsFn extends Function2[SparkInterval, SparkInterval, Boolean]
+  with Serializable {
+    def apply(si1: SparkInterval, si2: SparkInterval): Boolean = si1.overlaps(si2)
+  }
 
-  def intervalAbutsFn(si1 : SparkInterval, si2 : SparkInterval) : Boolean = si1.abuts(si2)
+  object intervalAbutsFn extends Function2[SparkInterval, SparkInterval, Boolean]
+  with Serializable {
+    def apply(si1: SparkInterval, si2: SparkInterval): Boolean = si1.abuts(si2)
+  }
 
-  def intervalIsBeforeFn(si : SparkInterval, dt : SparkDateTime) : Boolean = si.isBefore(dt)
+  object intervalIsBeforeFn extends Function2[SparkInterval, SparkDateTime, Boolean]
+  with Serializable {
+    def apply(si: SparkInterval, dt: SparkDateTime): Boolean = si.isBefore(dt)
+  }
 
-  def intervalIsAfterFn(si : SparkInterval, dt : SparkDateTime) : Boolean = si.isAfter(dt)
+  object intervalIsAfterFn extends Function2[SparkInterval, SparkDateTime, Boolean]
+  with Serializable {
+    def apply(si: SparkInterval, dt: SparkDateTime): Boolean = si.isAfter(dt)
+  }
 
-  def intervalStartFn(si : SparkInterval) : SparkDateTime = si.getStart
+  object intervalStartFn extends Function1[SparkInterval, SparkDateTime] with Serializable {
+    def apply(si: SparkInterval): SparkDateTime = si.getStart
+  }
 
-  def intervalEndFn(si : SparkInterval) : SparkDateTime = si.getEnd
+  object intervalEndFn extends Function1[SparkInterval, SparkDateTime] with Serializable {
+    def apply(si: SparkInterval): SparkDateTime = si.getEnd
+  }
 
-  def intervalGapFn(si1 : SparkInterval, si2 : SparkInterval) : SparkInterval = si1.gap(si2)
+  object intervalGapFn extends Function2[SparkInterval,SparkInterval, SparkInterval]
+  with Serializable {
+    def apply(si1: SparkInterval, si2: SparkInterval): SparkInterval = si1.gap(si2)
+  }
 
-  /**
-   * Bucket the input dates dt into specified Periods p based on their distance from the origin
-   * @param dt
-   * @param origin
-   * @param p
-   * @return
-   */
-  def timeBucketFn(dt : SparkDateTime, origin : SparkDateTime, p : SparkPeriod) : Long = {
-    val d0 : Duration = p.toStandardDuration
-    val d1 : Duration = new Period(origin, dt).toStandardDuration
-    FieldUtils.safeDivide(d1.getMillis, d0.getMillis)
+  object timeBucketFn extends Function3[SparkDateTime, SparkDateTime, SparkPeriod, Long]
+  with Serializable {
+    /**
+     * Bucket the input dates dt into specified Periods p based on their distance from the origin
+     * @param dt
+     * @param origin
+     * @param p
+     * @return
+     */
+    def apply(dt: SparkDateTime, origin: SparkDateTime, p: SparkPeriod): Long = {
+      val d0: Duration = p.toStandardDuration
+      val d1: Duration = new Period(origin, dt).toStandardDuration
+      FieldUtils.safeDivide(d1.getMillis, d0.getMillis)
+    }
   }
 
   def register(implicit sqlContext: SQLContext) = {
 
-    sqlContext.udf.register("dateTimeFromEpoch", dateTimeFromEpochFn _)
+    sqlContext.udf.register("dateTimeFromEpoch", dateTimeFromEpochFn)
 
-    sqlContext.udf.register("dateTime", dateTimeFn _)
+    sqlContext.udf.register("dateTime", dateTimeFn)
 
-    sqlContext.udf.register("dateTimeWithFormat", dateTimeWithFormatFn _)
+    sqlContext.udf.register("dateTimeWithFormat", dateTimeWithFormatFn)
 
-    sqlContext.udf.register("dateTimeWithTZ", dateTimeWithTZFn _)
+    sqlContext.udf.register("dateTimeWithTZ", dateTimeWithTZFn)
 
-    sqlContext.udf.register("dateTimeWithFormatAndTZFn", dateTimeWithFormatAndTZFn _)
+    sqlContext.udf.register("dateTimeWithFormatAndTZFn", dateTimeWithFormatAndTZFn)
 
-    sqlContext.udf.register("period", periodFn _)
+    sqlContext.udf.register("period", periodFn)
 
-    sqlContext.udf.register("millis", millisFn _)
+    sqlContext.udf.register("millis", millisFn)
 
-    sqlContext.udf.register("timeZoneId", timeZoneIdFn _)
+    sqlContext.udf.register("timeZoneId", timeZoneIdFn)
 
-    sqlContext.udf.register("withZone", withZoneFn _)
+    sqlContext.udf.register("withZone", withZoneFn)
 
-    sqlContext.udf.register("dateIsEqualNow", dateIsEqualNowFn _)
+    sqlContext.udf.register("dateIsEqualNow", dateIsEqualNowFn)
 
-    sqlContext.udf.register("dateIsBeforeNow", dateIsBeforeNowFn _)
+    sqlContext.udf.register("dateIsBeforeNow", dateIsBeforeNowFn)
 
-    sqlContext.udf.register("dateIsAfterNow", dateIsAfterNowFn _)
+    sqlContext.udf.register("dateIsAfterNow", dateIsAfterNowFn)
 
-    sqlContext.udf.register("dateIsBeforeOrEqualNow", dateIsBeforeOrEqualNowFn _)
+    sqlContext.udf.register("dateIsBeforeOrEqualNow", dateIsBeforeOrEqualNowFn)
 
-    sqlContext.udf.register("dateIsAfterOrEqualNow", dateIsAfterOrEqualNowFn _)
+    sqlContext.udf.register("dateIsAfterOrEqualNow", dateIsAfterOrEqualNowFn)
 
-    sqlContext.udf.register("dateIsEqual", dateIsEqualFn _)
+    sqlContext.udf.register("dateIsEqual", dateIsEqualFn)
 
-    sqlContext.udf.register("dateIsBefore", dateIsBeforeFn _)
+    sqlContext.udf.register("dateIsBefore", dateIsBeforeFn)
 
-    sqlContext.udf.register("dateIsAfter", dateIsAfterFn _)
+    sqlContext.udf.register("dateIsAfter", dateIsAfterFn)
 
-    sqlContext.udf.register("dateIsBeforeOrEqual", dateIsBeforeOrEqualFn _)
+    sqlContext.udf.register("dateIsBeforeOrEqual", dateIsBeforeOrEqualFn)
 
-    sqlContext.udf.register("dateIsAfterOrEqual", dateIsAfterOrEqualFn _)
+    sqlContext.udf.register("dateIsAfterOrEqual", dateIsAfterOrEqualFn)
 
-    sqlContext.udf.register("datePlus", datePlusFn _)
+    sqlContext.udf.register("datePlus", datePlusFn)
 
-    sqlContext.udf.register("dateMinus", dateMinusFn _)
+    sqlContext.udf.register("dateMinus", dateMinusFn)
 
-    sqlContext.udf.register("era", eraFn _)
+    sqlContext.udf.register("era", eraFn)
 
-    sqlContext.udf.register("centuryOfEra", centuryOfEraFn _)
+    sqlContext.udf.register("centuryOfEra", centuryOfEraFn)
 
-    sqlContext.udf.register("yearOfEra", yearOfEraFn _)
+    sqlContext.udf.register("yearOfEra", yearOfEraFn)
 
-    sqlContext.udf.register("yearOfCentury", yearOfCenturyFn _)
+    sqlContext.udf.register("yearOfCentury", yearOfCenturyFn)
 
-    sqlContext.udf.register("year", yearFn _)
+    sqlContext.udf.register("year", yearFn)
 
-    sqlContext.udf.register("weekyear", weekyearFn _)
+    sqlContext.udf.register("weekyear", weekyearFn)
 
-    sqlContext.udf.register("monthOfYear", monthOfYearFn _)
+    sqlContext.udf.register("monthOfYear", monthOfYearFn)
 
-    sqlContext.udf.register("monthOfYearName", monthOfYearNameFn _)
+    sqlContext.udf.register("monthOfYearName", monthOfYearNameFn)
 
-    sqlContext.udf.register("weekOfWeekyear", weekOfWeekyearFn _)
+    sqlContext.udf.register("weekOfWeekyear", weekOfWeekyearFn)
 
-    sqlContext.udf.register("dayOfYear", dayOfYearFn _)
+    sqlContext.udf.register("dayOfYear", dayOfYearFn)
 
-    sqlContext.udf.register("dayOfMonth", dayOfMonthFn _)
+    sqlContext.udf.register("dayOfMonth", dayOfMonthFn)
 
-    sqlContext.udf.register("dayOfWeek", dayOfWeekFn _)
+    sqlContext.udf.register("dayOfWeek", dayOfWeekFn)
 
-    sqlContext.udf.register("dayOfWeekName", dayOfWeekNameFn _)
+    sqlContext.udf.register("dayOfWeekName", dayOfWeekNameFn)
 
-    sqlContext.udf.register("hourOfDay", hourOfDayFn _)
+    sqlContext.udf.register("hourOfDay", hourOfDayFn)
 
-    sqlContext.udf.register("minuteOfDay", minuteOfDayFn _)
+    sqlContext.udf.register("minuteOfDay", minuteOfDayFn)
 
-    sqlContext.udf.register("secondOfDay", secondOfDayFn _)
+    sqlContext.udf.register("secondOfDay", secondOfDayFn)
 
-    sqlContext.udf.register("secondOfMinute", secondOfMinuteFn _)
+    sqlContext.udf.register("secondOfMinute", secondOfMinuteFn)
 
-    sqlContext.udf.register("millisOfDay", millisOfDayFn _)
+    sqlContext.udf.register("millisOfDay", millisOfDayFn)
 
-    sqlContext.udf.register("millisOfSecond", millisOfSecondFn _)
+    sqlContext.udf.register("millisOfSecond", millisOfSecondFn)
 
-    sqlContext.udf.register("withEra", withEraFn _)
+    sqlContext.udf.register("withEra", withEraFn)
 
-    sqlContext.udf.register("withCenturyOfEra", withCenturyOfEraFn _)
+    sqlContext.udf.register("withCenturyOfEra", withCenturyOfEraFn)
 
-    sqlContext.udf.register("withYearOfEra", withYearOfEraFn _)
+    sqlContext.udf.register("withYearOfEra", withYearOfEraFn)
 
-    sqlContext.udf.register("withYearOfCentury", withYearOfCenturyFn _)
+    sqlContext.udf.register("withYearOfCentury", withYearOfCenturyFn)
 
-    sqlContext.udf.register("withYear", withYearFn _)
+    sqlContext.udf.register("withYear", withYearFn)
 
-    sqlContext.udf.register("withWeekyear", withWeekyearFn _)
+    sqlContext.udf.register("withWeekyear", withWeekyearFn)
 
-    sqlContext.udf.register("withMonthOfYear", withMonthOfYearFn _)
+    sqlContext.udf.register("withMonthOfYear", withMonthOfYearFn)
 
-    sqlContext.udf.register("withWeekOfWeekyear", withWeekOfWeekyearFn _)
+    sqlContext.udf.register("withWeekOfWeekyear", withWeekOfWeekyearFn)
 
-    sqlContext.udf.register("withDayOfYear", withDayOfYearFn _)
+    sqlContext.udf.register("withDayOfYear", withDayOfYearFn)
 
-    sqlContext.udf.register("withDayOfMonth", withDayOfMonthFn _)
+    sqlContext.udf.register("withDayOfMonth", withDayOfMonthFn)
 
-    sqlContext.udf.register("interval", intervalFn _)
+    sqlContext.udf.register("interval", intervalFn)
 
-    sqlContext.udf.register("intervalFromStr", intervalFromStrFn _)
+    sqlContext.udf.register("intervalFromStr", intervalFromStrFn)
 
-    sqlContext.udf.register("intervalContainsDateTime", intervalContainsDateTimeFn _)
+    sqlContext.udf.register("intervalContainsDateTime", intervalContainsDateTimeFn)
 
-    sqlContext.udf.register("intervalContainsInterval", intervalContainsIntervalFn _)
+    sqlContext.udf.register("intervalContainsInterval", intervalContainsIntervalFn)
 
-    sqlContext.udf.register("intervalOverlaps", intervalOverlapsFn _)
+    sqlContext.udf.register("intervalOverlaps", intervalOverlapsFn)
 
-    sqlContext.udf.register("intervalAbuts", intervalAbutsFn _)
+    sqlContext.udf.register("intervalAbuts", intervalAbutsFn)
 
-    sqlContext.udf.register("intervalIsBefore", intervalIsBeforeFn _)
+    sqlContext.udf.register("intervalIsBefore", intervalIsBeforeFn)
 
-    sqlContext.udf.register("intervalIsAfter", intervalIsAfterFn _)
+    sqlContext.udf.register("intervalIsAfter", intervalIsAfterFn)
 
-    sqlContext.udf.register("intervalStart", intervalStartFn _)
+    sqlContext.udf.register("intervalStart", intervalStartFn)
 
-    sqlContext.udf.register("intervalEnd", intervalEndFn _)
+    sqlContext.udf.register("intervalEnd", intervalEndFn)
 
-    sqlContext.udf.register("intervalGap", intervalGapFn _)
+    sqlContext.udf.register("intervalGap", intervalGapFn)
 
-    sqlContext.udf.register("timeBucket", timeBucketFn _)
+    sqlContext.udf.register("timeBucket", timeBucketFn)
 
   }
 
