@@ -2,7 +2,7 @@ name := "spark-datetime"
 
 version := "0.0.1"
 
-organization := "Sparklinedata"
+organization := "SparklineData"
 
 scalaVersion := "2.10.4"
 
@@ -12,7 +12,7 @@ crossScalaVersions := Seq("2.10.4", "2.11.6")
 
 sparkVersion := "1.4.0"
 
-spName := "Sparklinedata/spark-datetime"
+spName := "SparklineData/spark-datetime"
 
 //spAppendScalaVersion := true
 
