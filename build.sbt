@@ -2,7 +2,7 @@ name := "spark-datetime"
 
 version := "0.0.1"
 
-organization := "org.sparklinedata"
+organization := "Sparklinedata"
 
 scalaVersion := "2.10.4"
 
