@@ -18,7 +18,7 @@ package org.sparklinedata.spark.dateTime
 
 import com.github.nscala_time.time.Imports._
 import org.apache.spark.sql.catalyst.dsl.expressions._
-import org.apache.spark.sql.test.TestSQLContext._
+import TestSQLContext._
 import org.sparklinedata.spark.dateTime.Functions._
 import org.sparklinedata.spark.dateTime.dsl.expressions._
 

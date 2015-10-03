@@ -20,8 +20,7 @@ package org.sparklinedata.spark.dateTime
 import com.github.nscala_time.time.Imports._
 import org.apache.spark.sql.catalyst.dsl.expressions._
 import org.apache.spark.sql.catalyst.expressions.Expression
-import org.apache.spark.sql.test.TestSQLContext._
-import org.apache.spark.sql.test._
+import TestSQLContext._
 import org.joda.time.field.FieldUtils
 import org.sparklinedata.spark.dateTime.Functions._
 import org.sparklinedata.spark.dateTime.dsl.expressions._
@@ -231,6 +230,8 @@ class FunctionsTest extends BaseTest {
     val i2 = dateTime('dt) to (dateTime('dt) + 5.days)
     val overlapsE = i1 overlapsE i2
     val abutsE = i1 abutsE i2
+
+    val s = date"select dt, $isBefore, $isAfter, $overlapsE, $abutsE from input"
 
     val t = sql(date"select dt, $isBefore, $isAfter, $overlapsE, $abutsE from input")
     t.collect.foreach { r =>

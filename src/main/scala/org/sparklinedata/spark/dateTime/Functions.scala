@@ -504,7 +504,7 @@ object Functions {
 
     sqlContext.udf.register("withDayOfMonth", withDayOfMonthFn)
 
-    sqlContext.udf.register("interval", intervalFn)
+    sqlContext.udf.register("intervalFn", intervalFn)
 
     sqlContext.udf.register("intervalFromStr", intervalFromStrFn)
 

@@ -17,8 +17,7 @@
 package org.sparklinedata.spark.dateTime
 
 import com.github.nscala_time.time.Imports._
-import org.apache.spark.sql.test.TestSQLContext
-import org.apache.spark.sql.test.TestSQLContext._
+import TestSQLContext._
 import org.joda.time.format.{ISODateTimeFormat, DateTimeFormatter}
 import org.scalatest.{BeforeAndAfterAll, FunSuite}
 import org.sparklinedata.spark.dateTime.Utils._

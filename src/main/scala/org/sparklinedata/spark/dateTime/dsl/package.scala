@@ -18,17 +18,16 @@
 package org.sparklinedata.spark.dateTime
 
 import com.github.nscala_time.time.DurationBuilder
-import org.apache.spark.sql.catalyst.expressions.mathfuncs.BinaryMathExpression
+import org.apache.spark.sql.catalyst.expressions._
 
 import scala.language.implicitConversions
 import org.apache.spark.sql.catalyst.analysis.{UnresolvedAttribute, UnresolvedFunction}
-import org.apache.spark.sql.catalyst.expressions.{BinaryExpression, Literal, Expression}
 import org.apache.spark.sql.types.StringType
 import com.github.nscala_time.time.Imports._
 
 package object dsl {
 
-  private def fun(nm: String, args: Expression*) = new UnresolvedFunction(nm, args)
+  private def fun(nm: String, args: Expression*) = new UnresolvedFunction(nm, args, false)
 
   private def toSQL(expr: Any): String = {
     def sqlFunName(s : String) : String = s match {
@@ -40,7 +39,10 @@ package object dsl {
     expr match {
       case l@Literal(_, StringType) if l.value != null => s""""$l""""
       case b : BinaryExpression => {
-        val nm = sqlFunName(b.symbol.toLowerCase)
+        val nm = b match {
+          case o:BinaryOperator => sqlFunName(o.symbol.toLowerCase)
+          case _ => sqlFunName(b.prettyName.toLowerCase)
+        }
         b match {
           case bm : BinaryMathExpression => {
             s"$nm(${toSQL(bm.left)}, ${toSQL(bm.right)})"
@@ -177,7 +179,7 @@ package object dsl {
 
     def <=(dE: DateExpression) = fun("dateIsBeforeOrEqual", expr, dE.expr)
 
-    def to(dE: DateExpression) = new IntervalExpression(fun("interval", expr, dE.expr))
+    def to(dE: DateExpression) = new IntervalExpression(fun("intervalFn", expr, dE.expr))
 
     def bucket(origin : DateExpression, p : PeriodExpression) =
       fun("timeBucket", expr, origin.expr, p.expr)

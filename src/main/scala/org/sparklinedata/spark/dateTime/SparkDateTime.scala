@@ -17,10 +17,11 @@
 
 package org.sparklinedata.spark.dateTime
 
-import org.apache.spark.sql.Row
+import org.apache.spark.sql.catalyst.InternalRow
 import org.apache.spark.sql.catalyst.CatalystTypeConverters
 import org.apache.spark.sql.catalyst.expressions.GenericMutableRow
 import org.apache.spark.sql.types._
+import org.apache.spark.unsafe.types.UTF8String
 
 @SQLUserDefinedType(udt = classOf[SparkDateTimeUDT])
 case class SparkDateTime(millis : Long, tzId : String)
@@ -30,21 +31,21 @@ class SparkDateTimeUDT extends UserDefinedType[SparkDateTime] {
   override def sqlType: DataType =
     StructType(Seq(StructField("millis", LongType), StructField("tz", StringType)))
 
-  override def serialize(obj: Any): Row = {
+  override def serialize(obj: Any): InternalRow = {
     obj match {
       case dt: SparkDateTime =>
         val row = new GenericMutableRow(2)
         row.setLong(0, dt.millis)
-        row.setString(1, dt.tzId)
+        row.update(1, CatalystTypeConverters.convertToCatalyst(dt.tzId))
         row
     }
   }
 
   override def deserialize(datum: Any): SparkDateTime = {
     datum match {
-      case row: Row =>
-        require(row.length == 2,
-          s"SparkDateTimeUDT.deserialize given row with length ${row.length} " +
+      case row: InternalRow =>
+        require(row.numFields == 2,
+          s"SparkDateTimeUDT.deserialize given row with length ${row.numFields} " +
             s"but requires length == 2")
         SparkDateTime(row.getLong(0), row.getString(1))
     }
