@@ -87,7 +87,7 @@ package object dsl {
 
     def yearOfCentury: Expression = fun("yearOfCentury", expr)
 
-    def year: Expression = fun("year", expr)
+    def year: Expression = fun("yearFn", expr)
 
     def weekyear: Expression = fun("weekyear", expr)
 
@@ -99,7 +99,7 @@ package object dsl {
 
     def dayOfYear: Expression = fun("dayOfYear", expr)
 
-    def dayOfMonth: Expression = fun("dayOfMonth", expr)
+    def dayOfMonth: Expression = fun("dayOfMonthFn", expr)
 
     def dayOfWeek: Expression = fun("dayOfWeek", expr)
 

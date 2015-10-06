@@ -454,7 +454,7 @@ object Functions {
 
     sqlContext.udf.register("yearOfCentury", yearOfCenturyFn)
 
-    sqlContext.udf.register("year", yearFn)
+    sqlContext.udf.register("yearFn", yearFn)
 
     sqlContext.udf.register("weekyear", weekyearFn)
 
@@ -466,7 +466,7 @@ object Functions {
 
     sqlContext.udf.register("dayOfYear", dayOfYearFn)
 
-    sqlContext.udf.register("dayOfMonth", dayOfMonthFn)
+    sqlContext.udf.register("dayOfMonthFn", dayOfMonthFn)
 
     sqlContext.udf.register("dayOfWeek", dayOfWeekFn)
 
