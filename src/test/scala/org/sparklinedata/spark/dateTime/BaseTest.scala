@@ -21,6 +21,7 @@ import TestSQLContext._
 import org.joda.time.format.{ISODateTimeFormat, DateTimeFormatter}
 import org.scalatest.{BeforeAndAfterAll, FunSuite}
 import org.sparklinedata.spark.dateTime.Utils._
+import org.sparklinedata.spark.dateTime2.Expressions
 
 case class TRow(dt: String)
 
@@ -31,6 +32,8 @@ abstract class BaseTest extends FunSuite with BeforeAndAfterAll {
 
   override def beforeAll() = {
     Functions.register(TestSQLContext)
+    Expressions.register(TestSQLContext)
+
     val fmt : DateTimeFormatter = ISODateTimeFormat.dateTime()
 
     val end = END_DATE
