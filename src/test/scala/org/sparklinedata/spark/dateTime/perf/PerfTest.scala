@@ -13,6 +13,8 @@ import scala.language.postfixOps
 
 abstract class PerfTest extends BaseTest {
 
+  def numTimes = 25
+
   override def beforeAll() = {
     super.beforeAll()
 
@@ -26,7 +28,7 @@ abstract class PerfTest extends BaseTest {
     df.registerTempTable("inputPerf")
   }
 
-  def timeAndCollect(df : DataFrame, f: Row => Unit, numTimes : Int = 25) : Array[Long] = {
+  def timeAndCollect(df : DataFrame, f: Row => Unit) : Array[Long] = {
     val res = new Array[Long](numTimes)
     df.foreach(f) // get any compilation thingys out of the way
     (0 until numTimes).foreach { i =>

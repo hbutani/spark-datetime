@@ -4,27 +4,40 @@ import org.apache.spark.sql.catalyst.dsl.expressions._
 import org.sparklinedata.spark.dateTime.TestSQLContext._
 import org.sparklinedata.spark.dateTime.dsl.expressions._
 
+import scala.language.postfixOps
+
 
 class CompareDateTimeExpressionsTest extends PerfTest {
 
-  test("spklFunctionDateTime") {
+  override val numTimes : Int = 100
 
-    val dT = dateTime('dt)
+  test("spklFunctionDateTime2") {
 
-    val df = sql(date"select $dT from inputPerf")
+    val yr = dateTime('dt) year
+
+    val df = sql(date"select $yr from inputPerf")
     val t = timeAndCollect( df, { r =>
-      val y1 = r.get(0)
+      val v1 = r.getInt(0)
       //println(s"$y1")
     })
     printTiming(t)
   }
 
-  test("spklExpressionDateTime") {
+  test("nativeFunctions2") {
 
-    val df = sql(date"select dateTimeE(dt) from inputPerf")
+    val df = sql("select year(dt) from inputPerf")
     val t = timeAndCollect( df, { r =>
-      val y1 = r.get(0)
-      //println(s"$y1")
+      val v1 = r.getInt(0)
+    })
+    printTiming(t)
+  }
+
+  test("spklExpressionDateTime2") {
+
+    val df = sql("select yearE(dateTimeE(dt)) from inputPerf")
+    val t = timeAndCollect( df, { r =>
+      val v1 = r.getInt(0)
+      //println(s"$v1 $v2")
     })
     printTiming(t)
   }
