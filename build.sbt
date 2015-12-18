@@ -10,7 +10,7 @@ parallelExecution in Test := false
 
 crossScalaVersions := Seq("2.10.4", "2.11.6")
 
-sparkVersion := "1.5.0"
+sparkVersion := "1.5.1"
 
 spName := "SparklineData/spark-datetime"
 
