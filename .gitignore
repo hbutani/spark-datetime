@@ -14,5 +14,16 @@ src_managed/
 project/boot/
 project/plugins/project/
 
+# idea
 .idea/
+*.iml
+
+# Mac
 .DS_Store
+
+# emacs
+*.*~
+
+# sbt
+build/sbt-launch-0.13.6.jar
+build/sbt-launch-0.13.7.jar
