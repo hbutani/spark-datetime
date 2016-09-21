@@ -56,7 +56,7 @@ object Functions {
 
   implicit def intervalToSpark(i : Interval) = SparkInterval(i.toString)
 
-  object dateTimeFromEpochFn extends Function1[Long, SparkDateTime] {
+  object dateTimeFromEpochFn extends Function1[Long, SparkDateTime] with Serializable {
     def apply(l: Long): SparkDateTime = new DateTime(l)
   }
 
