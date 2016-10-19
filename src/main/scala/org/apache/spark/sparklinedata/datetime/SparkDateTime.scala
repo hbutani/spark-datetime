@@ -15,11 +15,10 @@
  * limitations under the License.
  */
 
-package org.sparklinedata.spark.dateTime
+package org.apache.spark.sparklinedata.datetime
 
-import org.apache.spark.sql.catalyst.InternalRow
-import org.apache.spark.sql.catalyst.CatalystTypeConverters
 import org.apache.spark.sql.catalyst.expressions.GenericMutableRow
+import org.apache.spark.sql.catalyst.{CatalystTypeConverters, InternalRow}
 import org.apache.spark.sql.types._
 import org.apache.spark.unsafe.types.UTF8String
 
@@ -31,7 +30,7 @@ class SparkDateTimeUDT extends UserDefinedType[SparkDateTime] {
   override def sqlType: DataType =
     StructType(Seq(StructField("millis", LongType), StructField("tz", StringType)))
 
-  override def serialize(obj: Any): InternalRow = {
+  override def serialize(obj: SparkDateTime): InternalRow = {
     obj match {
       case dt: SparkDateTime =>
         val row = new GenericMutableRow(2)
@@ -64,7 +63,7 @@ class SparkPeriodUDT extends UserDefinedType[SparkPeriod] {
   override def sqlType: DataType = StringType
 
 
-  override def serialize(obj: Any): Any = {
+  override def serialize(obj: SparkPeriod): Any = {
     obj match {
       case p: SparkPeriod =>
         CatalystTypeConverters.convertToCatalyst(p.periodIsoStr)
@@ -91,7 +90,7 @@ class SparkIntervalUDT extends UserDefinedType[SparkInterval] {
   override def sqlType: DataType = StringType
 
 
-  override def serialize(obj: Any): Any = {
+  override def serialize(obj: SparkInterval): Any = {
     obj match {
       case i: SparkInterval =>
         CatalystTypeConverters.convertToCatalyst(i.intervalIsoStr)

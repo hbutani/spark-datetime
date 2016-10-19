@@ -21,6 +21,7 @@ import com.github.nscala_time.time.Imports._
 import org.apache.spark.sql.catalyst.dsl.expressions._
 import org.apache.spark.sql.catalyst.expressions.Expression
 import TestSQLContext._
+import org.apache.spark.sparklinedata.datetime.SparkDateTime
 import org.joda.time.field.FieldUtils
 import org.sparklinedata.spark.dateTime.Functions._
 import org.sparklinedata.spark.dateTime.dsl.expressions._

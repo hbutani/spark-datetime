@@ -23,6 +23,7 @@ import org.joda.time.field.FieldUtils
 
 import scala.language.implicitConversions
 import com.github.nscala_time.time.Imports._
+import org.apache.spark.sparklinedata.datetime.{SparkDateTime, SparkInterval, SparkPeriod}
 import org.apache.spark.sql.SQLContext
 import org.joda.time.DateTime
 import org.joda.time.format.{DateTimeFormatter, ISODateTimeFormat}

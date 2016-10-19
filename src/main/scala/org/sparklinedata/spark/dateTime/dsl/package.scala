@@ -27,7 +27,7 @@ import com.github.nscala_time.time.Imports._
 
 package object dsl {
 
-  private def fun(nm: String, args: Expression*) = new UnresolvedFunction(nm, args, false)
+  private def fun(nm: String, args: Expression*) = UnresolvedFunction(nm, args, false)
 
   private def toSQL(expr: Any): String = {
     def sqlFunName(s : String) : String = s match {

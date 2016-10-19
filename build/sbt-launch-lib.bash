@@ -7,7 +7,7 @@
 # TODO - Should we merge the main SBT script with this library?
 
 if test -z "$HOME"; then
-  declare -r script_dir="$(dirname $script_path)"
+  declare -r script_dir="$(dirname "$script_path")"
 else
   declare -r script_dir="$HOME/.sbt"
 fi
@@ -37,7 +37,7 @@ dlog () {
 }
 
 acquire_sbt_jar () {
-  SBT_VERSION=`awk -F "=" '/sbt\\.version/ {print $2}' ./project/build.properties`
+  SBT_VERSION=`awk -F "=" '/sbt\.version/ {print $2}' ./project/build.properties`
   URL1=https://dl.bintray.com/typesafe/ivy-releases/org.scala-sbt/sbt-launch/${SBT_VERSION}/sbt-launch.jar
   JAR=build/sbt-launch-${SBT_VERSION}.jar
 
@@ -45,20 +45,22 @@ acquire_sbt_jar () {
 
   if [[ ! -f "$sbt_jar" ]]; then
     # Download sbt launch jar if it hasn't been downloaded yet
-    if [ ! -f ${JAR} ]; then
+    if [ ! -f "${JAR}" ]; then
     # Download
     printf "Attempting to fetch sbt\n"
-    JAR_DL=${JAR}.part
-    if hash curl 2>/dev/null; then
-      (curl --progress-bar -L ${URL1} > ${JAR_DL} || curl --progress-bar -L ${URL2} > ${JAR_DL}) && mv ${JAR_DL} ${JAR}
-    elif hash wget 2>/dev/null; then
-      (wget --progress=bar ${URL1} -O ${JAR_DL} || wget --progress=bar ${URL2} -O ${JAR_DL}) && mv ${JAR_DL} ${JAR}
+    JAR_DL="${JAR}.part"
+    if [ $(command -v curl) ]; then
+      curl --fail --location --silent ${URL1} > "${JAR_DL}" &&\
+        mv "${JAR_DL}" "${JAR}"
+    elif [ $(command -v wget) ]; then
+      wget --quiet ${URL1} -O "${JAR_DL}" &&\
+        mv "${JAR_DL}" "${JAR}"
     else
       printf "You do not have curl or wget installed, please install sbt manually from http://www.scala-sbt.org/\n"
       exit -1
     fi
     fi
-    if [ ! -f ${JAR} ]; then
+    if [ ! -f "${JAR}" ]; then
     # We failed to download
     printf "Our attempt to download sbt locally to ${JAR} failed. Please install sbt manually from http://www.scala-sbt.org/\n"
     exit -1
@@ -80,7 +82,7 @@ execRunner () {
     echo ""
   }
 
-  exec "$@"
+  "$@"
 }
 
 addJava () {
@@ -103,7 +105,7 @@ addResidual () {
   residual_args=( "${residual_args[@]}" "$1" )
 }
 addDebugger () {
-  addJava "-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=$1"
+  addJava "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=$1"
 }
 
 # a ham-fisted attempt to move some memory settings in concert
@@ -123,7 +125,8 @@ require_arg () {
   local opt="$2"
   local arg="$3"
   if [[ -z "$arg" ]] || [[ "${arg:0:1}" == "-" ]]; then
-    die "$opt requires <$type> argument"
+    echo "$opt requires <$type> argument" 1>&2
+    exit 1
   fi
 }
 
@@ -183,11 +186,4 @@ run() {
     -jar "$sbt_jar" \
     "${sbt_commands[@]}" \
     "${residual_args[@]}"
-}
-
-runAlternateBoot() {
-  local bootpropsfile="$1"
-  shift
-  addJava "-Dsbt.boot.properties=$bootpropsfile"
-  run $@
 }

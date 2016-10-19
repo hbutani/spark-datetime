@@ -1,13 +1,13 @@
 
-scalaVersion := "2.10.5"
+scalaVersion := "2.11.8"
 
-crossScalaVersions := Seq("2.10.4", "2.11.6")
+crossScalaVersions := Seq("2.10.4", "2.11.8")
 
 parallelExecution in Test := false
 
-val nscalaVersion = "1.6.0"
+val nscalaVersion = "2.12.0"
 val scalatestVersion = "2.2.4"
-val sparkVersion = "1.6.0"
+val sparkVersion = "2.0.0"
 
 val coreDependencies = Seq(
   "com.github.nscala-time" %% "nscala-time" % nscalaVersion,
@@ -22,13 +22,13 @@ val coreTestDependencies = Seq(
 lazy val commonSettings = Seq(
   organization := "com.sparklinedata",
 
-  version := "0.0.2",
+  version := "0.0.3",
 
   javaOptions := Seq("-Xms512m", "-Xmx512m", "-XX:MaxPermSize=256M"),
 
   // Target Java 7
-  scalacOptions += "-target:jvm-1.7",
-  javacOptions in compile ++= Seq("-source", "1.7", "-target", "1.7"),
+  scalacOptions += "-target:jvm-1.8",
+  javacOptions in compile ++= Seq("-source", "1.8", "-target", "1.8"),
 
   scalacOptions := Seq("-feature", "-deprecation"),
 
