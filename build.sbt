@@ -77,6 +77,11 @@ lazy val root = project.in(file("."))
   .settings(
   artifact in (Compile, assembly) ~= { art =>
     art.copy(`classifier` = Some("assembly"))
-  }
+  },
+    assemblyExcludedJars in assembly := {
+      val cp = (fullClasspath in assembly).value
+      println(cp)
+      cp filter {_.data.getName startsWith "joda"}
+    }
   )
   .settings(addArtifact(artifact in (Compile, assembly), assembly).settings: _*)
